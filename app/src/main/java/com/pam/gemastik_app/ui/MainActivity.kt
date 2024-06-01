@@ -1,15 +1,16 @@
 package com.pam.gemastik_app.ui
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityMainBinding
 import com.pam.gemastik_app.ui.login.LoginActivity
+import com.pam.gemastik_app.ui.photoutil.CameraActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -17,6 +18,8 @@ class MainActivity : AppCompatActivity() {
     companion object{
         lateinit var auth:FirebaseAuth
     }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,6 +32,10 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.btCamera.setOnClickListener(){
+            startActivity(Intent(this, CameraActivity::class.java))
+            finish()
+        }
 
     }
 
