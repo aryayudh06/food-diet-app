@@ -2,6 +2,7 @@ package com.pam.gemastik_app.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +38,11 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        val imageUriString = intent.getStringExtra("imageUri")
+        if (imageUriString != null) {
+            val imageUri = Uri.parse(imageUriString)
+            updateImage(imageUri)
+        }
     }
 
     override fun onResume() {
@@ -46,5 +52,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateData(): String{
         return "Selamat Datang, ${auth.currentUser?.email}"
+    }
+
+    private fun updateImage(image: Uri) {
+        binding.ivImageFood.setImageURI(image)
     }
 }

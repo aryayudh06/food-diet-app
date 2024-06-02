@@ -1,15 +1,23 @@
 package com.pam.gemastik_app.ui.photoutil
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.Audio.Media
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -21,6 +29,7 @@ import androidx.camera.video.VideoCapture
 import androidx.core.content.ContextCompat
 
 import com.pam.gemastik_app.databinding.ActivityCameraBinding
+import com.pam.gemastik_app.ui.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -36,6 +45,7 @@ class CameraActivity : AppCompatActivity() {
 
     private var videoCapture: VideoCapture<Recorder>? = null
     private var recording: Recording? = null
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -70,9 +80,12 @@ class CameraActivity : AppCompatActivity() {
             requestPermissions()
         }
 
+        registerResult()
+
         // Set up the listeners for take photo and video capture buttons
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
-        viewBinding.videoCaptureButton.setOnClickListener { captureVideo() }
+        viewBinding.imageSelectButton.setOnClickListener { selectImage() }
+        viewBinding.ibBackCam.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -112,6 +125,9 @@ class CameraActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults){
                     val msg = "Photo capture succeeded: ${output.savedUri}"
+                    val intent = Intent(this@CameraActivity, MainActivity::class.java)
+                    intent.putExtra("imageUri", output.savedUri.toString())
+                    startActivity(intent)
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     Log.d(TAG, msg)
                 }
@@ -119,7 +135,10 @@ class CameraActivity : AppCompatActivity() {
         )
     }
 
-    private fun captureVideo() {}
+    private fun selectImage() {
+        val intent = Intent(MediaStore.ACTION_PICK_IMAGES)
+        resultLauncher.launch(intent)
+    }
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -155,6 +174,29 @@ class CameraActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
     }
+
+
+    private fun registerResult() {
+        resultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback { result ->
+                try {
+                    val imageUri: Uri? = result.data?.data
+                    if (imageUri != null) {
+                        val intent = Intent(this, MainActivity::class.java)
+                        intent.putExtra("imageUri", imageUri.toString())
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+
+
 
     private fun requestPermissions() {
         activityResultLauncher.launch(REQUIRED_PERMISSIONS)
