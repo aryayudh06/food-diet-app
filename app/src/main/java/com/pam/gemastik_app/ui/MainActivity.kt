@@ -1,20 +1,30 @@
 package com.pam.gemastik_app.ui
 
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import bg_thread.ModelTask
 import com.google.firebase.auth.FirebaseAuth
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityMainBinding
 import com.pam.gemastik_app.ui.login.LoginActivity
 import com.pam.gemastik_app.ui.photoutil.CameraActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val apiKey = "AIzaSyADLMVsZ-hHtN9Gyriy1kGb-aMVdMoXQkM"
 
     companion object{
         lateinit var auth:FirebaseAuth
@@ -26,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.pbModelRes.visibility = View.GONE
 
         binding.btSignOut.setOnClickListener(){
             auth.signOut()
@@ -42,7 +53,16 @@ class MainActivity : AppCompatActivity() {
         if (imageUriString != null) {
             val imageUri = Uri.parse(imageUriString)
             updateImage(imageUri)
+            val bitmapImg: Bitmap? = uriToBitmap(contentResolver, imageUri)
+            binding.pbModelRes.visibility = View.VISIBLE
+            CoroutineScope(Dispatchers.Main).launch {
+                val modelTask = ModelTask(apiKey)
+                val responseText = bitmapImg?.let { modelTask.executeModelCall(it) }
+                binding.tvGemini.text = responseText
+                binding.pbModelRes.visibility = View.GONE // Hide loading indicator
+            }
         }
+
     }
 
     override fun onResume() {
@@ -57,4 +77,17 @@ class MainActivity : AppCompatActivity() {
     private fun updateImage(image: Uri) {
         binding.ivImageFood.setImageURI(image)
     }
+
+    private fun uriToBitmap(contentResolver: ContentResolver, uri: Uri): Bitmap? {
+        var bitmap: Bitmap? = null
+        try {
+            val inputStream: InputStream? = contentResolver.openInputStream(uri)
+            bitmap = BitmapFactory.decodeStream(inputStream)
+            inputStream?.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return bitmap
+    }
+
 }
