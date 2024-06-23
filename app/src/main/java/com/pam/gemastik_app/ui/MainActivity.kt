@@ -21,7 +21,7 @@ import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val apiKey = ""
+    private val apiKey = "AIzaSyADLMVsZ-hHtN9Gyriy1kGb-aMVdMoXQkM"
 
     companion object{
         lateinit var auth:FirebaseAuth
@@ -43,6 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         binding.btCamera.setOnClickListener(){
             startActivity(Intent(this, CameraActivity::class.java))
+            finish()
+        }
+
+        binding.btRecc.setOnClickListener(){
+            startActivity(Intent(this, RecommendationActivity::class.java))
             finish()
         }
 

@@ -21,12 +21,13 @@
         android:id="@+id/btSignOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="492dp"
         android:text="Sign Out"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.216"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvUser" />
+        app:layout_constraintTop_toBottomOf="@+id/ivImageFood"
+        app:layout_constraintVertical_bias="0.916" />
 
     <Button
         android:id="@+id/btCamera"
@@ -35,7 +36,7 @@
         android:text="Camera"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.801"
+        app:layout_constraintHorizontal_bias="0.776"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivImageFood"
         app:layout_constraintVertical_bias="0.729" />
@@ -70,4 +71,16 @@
         app:layout_constraintEnd_toEndOf="@+id/tvGemini"
         app:layout_constraintStart_toStartOf="@+id/tvGemini"
         app:layout_constraintTop_toTopOf="@+id/tvGemini" />
+
+    <Button
+        android:id="@+id/btRecc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reccomendation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btCamera"
+        app:layout_constraintHorizontal_bias="0.436"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivImageFood"
+        app:layout_constraintVertical_bias="0.729" />
 </androidx.constraintlayout.widget.ConstraintLayout>
