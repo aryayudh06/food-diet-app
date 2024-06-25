@@ -2,6 +2,7 @@ package com.pam.gemastik_app.ui.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 
 import com.pam.gemastik_app.R
+import com.pam.gemastik_app.ui.FoodDetailActivity
 import com.pam.gemastik_app.ui.MainActivity
 
 
@@ -16,16 +18,13 @@ import com.pam.gemastik_app.ui.MainActivity
  * A simple [Fragment] subclass.
  * Use the [MenuFragment.newInstance] factory method to
  * create an instance of this fragment.
- */
-class MenuFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+ */class MenuFragment : Fragment() {
+    private var currentActivityName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
+            currentActivityName = it.getString(ARG_ACTIVITY_NAME)
         }
     }
 
@@ -33,53 +32,35 @@ class MenuFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_menu, container, false)
 
-        // Set click listeners for each ImageButton
+        // Log the name of the current activity
+        Log.d("MenuFragment", "Current Activity: $currentActivityName")
+
         val homeButton: ImageButton = view.findViewById(R.id.imageButtonHome)
         homeButton.setOnClickListener {
             val intent = Intent(activity, MainActivity::class.java)
             startActivity(intent)
         }
-//
-//        val cameraButton: ImageButton = view.findViewById(R.id.imageButtonCamera)
-//        cameraButton.setOnClickListener {
-//            val intent = Intent(activity, CameraActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
-//        saladButton.setOnClickListener {
-//            val intent = Intent(activity, SaladActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        val userButton: ImageButton = view.findViewById(R.id.imageButtonUser)
-//        userButton.setOnClickListener {
-//            val intent = Intent(activity, UserActivity::class.java)
-//            startActivity(intent)
-//        }
+
+        val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
+        saladButton.setOnClickListener {
+            val intent = Intent(activity, FoodDetailActivity::class.java)
+            startActivity(intent)
+        }
 
         return view
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MenuFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MenuFragment().apply {
-                arguments = Bundle().apply {
+        private const val ARG_ACTIVITY_NAME = "activity_name"
 
-                }
-            }
+        fun newInstance(activityName: String): MenuFragment {
+            val fragment = MenuFragment()
+            val args = Bundle()
+            args.putString(ARG_ACTIVITY_NAME, activityName)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

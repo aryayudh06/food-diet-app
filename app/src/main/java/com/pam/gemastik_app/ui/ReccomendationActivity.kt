@@ -34,7 +34,7 @@ class RecommendationActivity : AppCompatActivity() {
         binding = ActivityReccomendationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val fragment1: Fragment = MenuFragment()
+         val fragment1: MenuFragment = MenuFragment.newInstance(this::class.java.simpleName)
 
         supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
 

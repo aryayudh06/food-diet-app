@@ -26,6 +26,9 @@
         android:theme="@style/Theme.Gemastikapp"
         tools:targetApi="31">
         <activity
+            android:name=".ui.FoodDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.photoutil.CameraActivity"
             android:exported="false" />
         <activity
