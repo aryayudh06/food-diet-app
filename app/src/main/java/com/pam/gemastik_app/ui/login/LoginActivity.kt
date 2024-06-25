@@ -39,14 +39,14 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
 
-        binding.btRegister.setOnClickListener {
+        binding.registerTextView.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
         }
 
-        binding.btLogin.setOnClickListener(){
-            val email = binding.etEmail.text.toString()
-            val passwd = binding.etPassword.text.toString()
+        binding.loginButton.setOnClickListener(){
+            val email = binding.emailEditText.text.toString()
+            val passwd = binding.passwordEditText.text.toString()
 
             if(email.isNotEmpty() && passwd.isNotEmpty())
                 MainActivity.auth.signInWithEmailAndPassword(email, passwd).addOnCompleteListener(){

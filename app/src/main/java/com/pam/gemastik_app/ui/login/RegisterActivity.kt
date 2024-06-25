@@ -16,19 +16,25 @@ class RegisterActivity : AppCompatActivity() {
 
         supportActionBar?.title = "Register"
 
-        binding.btRegisterAcc.setOnClickListener(){
-            val email = binding.etRegisterEmail.text.toString()
-            val passwd = binding.etRegisterPass.text.toString()
+        binding.registerButton.setOnClickListener(){
+            val name = binding.nameEditText.text.toString()
+            val email = binding.emailEditText.text.toString()
+            val passwd = binding.passwordEditText.text.toString()
+            val passConfirm = binding.confirmPasswordEditText.text.toString()
 
-            if(email.isNotEmpty() && passwd.isNotEmpty())
+            if((email.isNotEmpty() && passwd.isNotEmpty()) && (passwd == passConfirm) && binding.privacyCheckBox.isChecked)
                 MainActivity.auth.createUserWithEmailAndPassword(email, passwd).addOnCompleteListener(){
                     if(it.isSuccessful){
-                        startActivity(Intent(this, LoginActivity::class.java))
+                        startActivity(Intent(this, MainActivity::class.java))
                         finish()
                     }
                 }.addOnFailureListener(){
                     Toast.makeText(this, it.localizedMessage, Toast.LENGTH_LONG).show()
                 }
+        }
+
+        binding.loginTextView.setOnClickListener(){
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 }
