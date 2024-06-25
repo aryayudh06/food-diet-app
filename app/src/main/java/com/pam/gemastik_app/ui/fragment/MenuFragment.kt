@@ -7,13 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
-import com.pam.gemastik_app.ARG_PARAM1
-import com.pam.gemastik_app.ARG_PARAM2
+
 import com.pam.gemastik_app.R
-import com.pam.gemastik_app.ui.activity.HomeActivity
-import com.pam.gemastik_app.ui.activity.CameraActivity
-import com.pam.gemastik_app.ui.activity.SaladActivity
-import com.pam.gemastik_app.ui.activity.UserActivity
+import com.pam.gemastik_app.ui.MainActivity
+
 
 /**
  * A simple [Fragment] subclass.
@@ -28,8 +25,7 @@ class MenuFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -43,27 +39,27 @@ class MenuFragment : Fragment() {
         // Set click listeners for each ImageButton
         val homeButton: ImageButton = view.findViewById(R.id.imageButtonHome)
         homeButton.setOnClickListener {
-            val intent = Intent(activity, HomeActivity::class.java)
+            val intent = Intent(activity, MainActivity::class.java)
             startActivity(intent)
         }
-
-        val cameraButton: ImageButton = view.findViewById(R.id.imageButtonCamera)
-        cameraButton.setOnClickListener {
-            val intent = Intent(activity, CameraActivity::class.java)
-            startActivity(intent)
-        }
-
-        val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
-        saladButton.setOnClickListener {
-            val intent = Intent(activity, SaladActivity::class.java)
-            startActivity(intent)
-        }
-
-        val userButton: ImageButton = view.findViewById(R.id.imageButtonUser)
-        userButton.setOnClickListener {
-            val intent = Intent(activity, UserActivity::class.java)
-            startActivity(intent)
-        }
+//
+//        val cameraButton: ImageButton = view.findViewById(R.id.imageButtonCamera)
+//        cameraButton.setOnClickListener {
+//            val intent = Intent(activity, CameraActivity::class.java)
+//            startActivity(intent)
+//        }
+//
+//        val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
+//        saladButton.setOnClickListener {
+//            val intent = Intent(activity, SaladActivity::class.java)
+//            startActivity(intent)
+//        }
+//
+//        val userButton: ImageButton = view.findViewById(R.id.imageButtonUser)
+//        userButton.setOnClickListener {
+//            val intent = Intent(activity, UserActivity::class.java)
+//            startActivity(intent)
+//        }
 
         return view
     }
@@ -82,8 +78,7 @@ class MenuFragment : Fragment() {
         fun newInstance(param1: String, param2: String) =
             MenuFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
                 }
             }
     }

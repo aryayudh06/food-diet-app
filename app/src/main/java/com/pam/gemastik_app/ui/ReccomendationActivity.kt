@@ -10,11 +10,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.pam.gemastik_app.ui.fragment.MenuFragment
+import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityReccomendationBinding
 import org.json.JSONObject
 
@@ -23,14 +26,17 @@ class RecommendationActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
     private var api_id1 = "abb8bc51aeed4ca6b5f9fc481a0ea6de"
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var binding: ActivityReccomendationBinding
+    private lateinit var binding:ActivityReccomendationBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityReccomendationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val fragment1: Fragment = MenuFragment()
+
+        supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
