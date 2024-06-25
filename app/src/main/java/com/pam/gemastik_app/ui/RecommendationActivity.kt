@@ -11,14 +11,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import com.pam.gemastik_app.R
-import com.pam.gemastik_app.databinding.ActivityReccomendationBinding
+import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
+import com.pam.gemastik_app.model.FoodModel
+import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import org.json.JSONObject
 
 class RecommendationActivity : AppCompatActivity() {
@@ -26,25 +33,54 @@ class RecommendationActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
     private var api_id1 = "abb8bc51aeed4ca6b5f9fc481a0ea6de"
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var binding:ActivityReccomendationBinding
+    private lateinit var binding:ActivityRecommendationBinding
+    private lateinit var breakyAdapter: FoodAdapter
+    private lateinit var lunchAdapter: FoodAdapter
+    private lateinit var dinnerAdapter: FoodAdapter
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var databaseReference: DatabaseReference
+    private val Breaky: MutableList<FoodModel> = ArrayList()
+    private val Lunch: MutableList<FoodModel> = ArrayList()
+    private val Dinner: MutableList<FoodModel> = ArrayList()
 
      override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+         super.onCreate(savedInstanceState)
+         binding = ActivityRecommendationBinding.inflate(layoutInflater)
+         setContentView(binding.root)
 
-        binding = ActivityReccomendationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+         FirebaseApp.initializeApp(this)
 
-        val fragment1: Fragment = MenuFragment()
+         firebaseDatabase = FirebaseDatabase.getInstance("https://gemastik-a8145-default-rtdb.asia-southeast1.firebasedatabase.app/")
+         databaseReference = firebaseDatabase.getReference()
 
-        supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
+         val fragment1: Fragment = MenuFragment()
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+         supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
 
-        binding.btVar1.setOnClickListener {
-            if (checkAndRequestPermissions()) {
-                obtainLocation()
-            }
-        }
+         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+         val location = if(checkAndRequestPermissions()) {
+             obtainLocation()
+         } else {
+             null
+         }
+
+         val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+         val lunchLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+         val dinnerLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+         binding.rvBreaky.layoutManager = breakyLM
+         binding.rvLunch.layoutManager = lunchLM
+         binding.rvDinner.layoutManager = dinnerLM
+
+         breakyAdapter = FoodAdapter(this, Breaky)
+         lunchAdapter = FoodAdapter(this, Lunch)
+         dinnerAdapter = FoodAdapter(this, Dinner)
+
+         binding.rvBreaky.adapter = breakyAdapter
+         binding.rvLunch.adapter = lunchAdapter
+         binding.rvDinner.adapter = dinnerAdapter
+
     }
 
     private fun checkAndRequestPermissions(): Boolean {
@@ -77,12 +113,12 @@ class RecommendationActivity : AppCompatActivity() {
                     getTemp(weather_url1)
                 } else {
                     Log.e("Location Error", "Location is null")
-                    binding.textView.text = "Unable to obtain location"
+                    Toast.makeText(this, "Unable to obtain location", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("Location Error", e.message ?: "Unknown error")
-                binding.textView.text = "Failed to get location"
+                Toast.makeText(this, "An error appeared while finding locaiton", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -97,15 +133,14 @@ class RecommendationActivity : AppCompatActivity() {
                     val obj2 = arr.getJSONObject(0)
                     val temperature = obj2.getString("temp")
                     val cityName = obj2.getString("city_name")
-                    binding.textView.text = "$temperature °C in $cityName"
                 } catch (e: Exception) {
                     Log.e("JSON Error", e.message ?: "Unknown error")
-                    binding.textView.text = "Error parsing weather data"
+                    Toast.makeText(this, "Error parsing weather data", Toast.LENGTH_SHORT).show()
                 }
             },
             { error ->
                 Log.e("Volley Error", error.message ?: "Unknown error")
-                binding.textView.text = "That didn't work!"
+                Toast.makeText(this, "Failed to obtain weather data", Toast.LENGTH_SHORT).show()
             }
         )
 

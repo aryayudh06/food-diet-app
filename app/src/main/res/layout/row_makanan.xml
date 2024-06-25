@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clBreaky"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="9dp">
+
+    <ImageView
+        android:id="@+id/ivBreaky"
+        android:layout_width="171dp"
+        android:layout_height="120dp"
+        android:contentDescription="Nasi Goreng"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/nasi_goreng"
+        tools:src="@drawable/group" />
+
+    <TextView
+        android:id="@+id/tvBreaky"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Nasi Goreng"
+        android:textColor="@color/yellow50"
+        app:layout_constraintStart_toStartOf="@+id/ivBreaky"
+        app:layout_constraintTop_toBottomOf="@+id/ivBreaky" />
+
+    <TextView
+        android:id="@+id/tvCalBreaky"
+        android:layout_width="wrap_content"
+        android:layout_height="14dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Kalori: 267 kkal"
+        android:textColor="#BFBFBF"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="@+id/tvBreaky"
+        app:layout_constraintTop_toBottomOf="@+id/tvBreaky" />
+
+    <ImageButton
+        android:id="@+id/ibBreaky"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:contentDescription="checkBreaky"
+        android:src="@drawable/check_circle_1"
+        app:layout_constraintEnd_toEndOf="@+id/ivBreaky"
+        app:layout_constraintTop_toTopOf="@+id/tvBreaky" />
+</androidx.constraintlayout.widget.ConstraintLayout>
