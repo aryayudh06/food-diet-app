@@ -13,4 +13,6 @@
     <string name="start_capture">Start Capture</string>
     <string name="stop_capture">Stop Capture</string>
     <string name="client_id">"583046945853-e0qceb6hlks8m5enqlkgar5rtkegu2dg.apps.googleusercontent.com"</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

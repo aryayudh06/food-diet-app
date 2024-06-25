@@ -31,6 +31,7 @@ class RecommendationActivity : AppCompatActivity() {
         binding = ActivityReccomendationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         binding.btVar1.setOnClickListener {
