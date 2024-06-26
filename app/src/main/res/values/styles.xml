@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Spinner"/>
+    <style name="Spinner.PoppinsSemibold10sp020202">
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textColor">#CCCCCC</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:height">40dp</item>
+        <item name="android:background">@drawable/shape_input_text</item>
+        <item name="android:gravity">center_vertical|start</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:spinnerMode">dropdown</item>
+    </style>
+
+</resources>

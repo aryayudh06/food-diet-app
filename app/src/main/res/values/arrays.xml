@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="meds">
+        <item>Type 1 Diabetes Mellitus</item>
+        <item>Celiac/Coeliac</item>
+        <item>Phenylketonuria</item>
+        <item>Galactosemia</item>
+        <item>Hemochromatosis</item>
+        <item>G6PD Deficiency</item>
+        <item>Cystic Fibrosis</item>
+        <item>Gout</item>
+        <item>Familial hypercholesterolemia</item>
+    </string-array>
+</resources>

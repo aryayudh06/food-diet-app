@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.ui.FoodDetailActivity
 import com.pam.gemastik_app.ui.MainActivity
+import com.pam.gemastik_app.ui.RecommendationActivity
 
 
 /**
@@ -45,7 +46,7 @@ import com.pam.gemastik_app.ui.MainActivity
 
         val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
         saladButton.setOnClickListener {
-            val intent = Intent(activity, FoodDetailActivity::class.java)
+            val intent = Intent(activity, RecommendationActivity::class.java)
             startActivity(intent)
         }
 

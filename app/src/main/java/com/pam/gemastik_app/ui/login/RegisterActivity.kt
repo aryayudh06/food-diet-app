@@ -25,7 +25,7 @@ class RegisterActivity : AppCompatActivity() {
             if((email.isNotEmpty() && passwd.isNotEmpty()) && (passwd == passConfirm) && binding.privacyCheckBox.isChecked)
                 MainActivity.auth.createUserWithEmailAndPassword(email, passwd).addOnCompleteListener(){
                     if(it.isSuccessful){
-                        startActivity(Intent(this, MainActivity::class.java))
+                        startActivity(Intent(this, Sign_Up_Personalization::class.java))
                         finish()
                     }
                 }.addOnFailureListener(){

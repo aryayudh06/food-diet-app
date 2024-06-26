@@ -6,26 +6,28 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.pam.gemastik_app.ui.fragment.MenuFragment
+import com.google.firebase.database.ValueEventListener
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
 import com.pam.gemastik_app.model.FoodModel
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
+import com.pam.gemastik_app.ui.fragment.MenuFragment
 import org.json.JSONObject
 
 class RecommendationActivity : AppCompatActivity() {
@@ -53,7 +55,7 @@ class RecommendationActivity : AppCompatActivity() {
          firebaseDatabase = FirebaseDatabase.getInstance("https://gemastik-a8145-default-rtdb.asia-southeast1.firebasedatabase.app/")
          databaseReference = firebaseDatabase.getReference()
 
-         val fragment1: Fragment = MenuFragment()
+         val fragment1: MenuFragment = MenuFragment.newInstance(this::class.java.simpleName)
 
          supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
 
@@ -81,6 +83,136 @@ class RecommendationActivity : AppCompatActivity() {
          binding.rvLunch.adapter = lunchAdapter
          binding.rvDinner.adapter = dinnerAdapter
 
+         fetchFood()
+
+         binding.moreBreaky.setOnClickListener {
+             val runnable = Runnable {
+                 databaseReference.child("Foods").child("Breakfast").addValueEventListener(object: ValueEventListener{
+                     override fun onDataChange(snapshot: DataSnapshot) {
+                         Breaky.clear()
+                         for (dataSnapshot in snapshot.children) {
+                             val breaky = dataSnapshot.getValue(FoodModel::class.java)
+                             if (breaky != null) {
+                                 Breaky.add(breaky)
+                             }
+                         }
+                         breakyAdapter.notifyDataSetChanged()
+                     }
+                     override fun onCancelled(error: DatabaseError) {
+                         Toast.makeText(this@RecommendationActivity, "Failed to load more breakfast data", Toast.LENGTH_SHORT).show()
+                     }
+                 })
+             }
+             val moreBreaky = Thread(runnable)
+             moreBreaky.start()
+             binding.moreBreaky.visibility = View.GONE
+         }
+
+         binding.moreLunch.setOnClickListener {
+             val runnable = Runnable {
+                 databaseReference.child("Foods").child("Lunch").addValueEventListener(object: ValueEventListener{
+                     override fun onDataChange(snapshot: DataSnapshot) {
+                         Lunch.clear()
+                         for (dataSnapshot in snapshot.children) {
+                             val lunch = dataSnapshot.getValue(FoodModel::class.java)
+                             if (lunch != null) {
+                                 Lunch.add(lunch)
+                             }
+                         }
+                         lunchAdapter.notifyDataSetChanged()
+                     }
+                     override fun onCancelled(error: DatabaseError) {
+                         Toast.makeText(this@RecommendationActivity, "Failed to load more lunch data", Toast.LENGTH_SHORT).show()
+                     }
+                 })
+             }
+             val moreLunch = Thread(runnable)
+             moreLunch.start()
+             binding.moreLunch.visibility = View.GONE
+         }
+
+         binding.moreDinner.setOnClickListener {
+             val runnable = Runnable {
+                 databaseReference.child("Foods").child("Dinner").addValueEventListener(object: ValueEventListener{
+                     override fun onDataChange(snapshot: DataSnapshot) {
+                         Dinner.clear()
+                         for (dataSnapshot in snapshot.children) {
+                             val dinner = dataSnapshot.getValue(FoodModel::class.java)
+                             if (dinner != null) {
+                                 Dinner.add(dinner)
+                             }
+                         }
+                         dinnerAdapter.notifyDataSetChanged()
+                     }
+                     override fun onCancelled(error: DatabaseError) {
+                         Toast.makeText(this@RecommendationActivity, "Failed to load more dinner data", Toast.LENGTH_SHORT).show()
+                     }
+                 })
+             }
+             val moreDinner = Thread(runnable)
+             moreDinner.start()
+             binding.moreDinner.visibility = View.GONE
+         }
+    }
+
+    private fun fetchFood() {
+        val runnable = Runnable {
+            databaseReference.child("Foods").child("Breakfast").addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Breaky.clear()
+                    val children = snapshot.children.toList()
+                    for (i in 0 until 1) {
+                        val dataSnapshot = children[i]
+                        val breaky = dataSnapshot.getValue(FoodModel::class.java)
+                        if (breaky != null) {
+                            Breaky.add(breaky)
+                        }
+                    }
+                    breakyAdapter.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@RecommendationActivity, "Failed to load breakfast data", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+            databaseReference.child("Foods").child("Lunch").addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Lunch.clear()
+                    val children = snapshot.children.toList()
+                    for (i in 0 until 1) {
+                        val dataSnapshot = children[i]
+                        val lunch = dataSnapshot.getValue(FoodModel::class.java)
+                        if (lunch != null) {
+                            Lunch.add(lunch)
+                        }
+                    }
+                    lunchAdapter.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@RecommendationActivity, "Failed to load lunch data", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+            databaseReference.child("Foods").child("Dinner").addValueEventListener(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    Dinner.clear()
+                    val children = snapshot.children.toList()
+                    for (i in 0 until 1) {
+                        val dataSnapshot = children[i]
+                        val dinner = dataSnapshot.getValue(FoodModel::class.java)
+                        if (dinner != null) {
+                            Dinner.add(dinner)
+                        }
+                    }
+                    dinnerAdapter.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@RecommendationActivity, "Failed to load breakfast data", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+        val net = Thread(runnable)
+        net.start()
     }
 
     private fun checkAndRequestPermissions(): Boolean {

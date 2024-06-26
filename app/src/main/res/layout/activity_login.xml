@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
@@ -11,54 +13,80 @@
     android:paddingBottom="16dp">
 
     <TextView
+        android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Hello Again!"
         android:textColor="@color/yellow50"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="Transform your lifestyle, one healthy choice at a time."
-        android:textAlignment="viewStart"
+        android:textAlignment="center"
         android:textColor="#999999"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <TextView
+        android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="Join us today!"
+        android:textAlignment="center"
         android:textColor="#999999"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/textView11"
+        app:layout_constraintStart_toStartOf="@+id/textView11"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <EditText
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="44dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/edit_text_background"
         android:fontFamily="@font/poppins_semibold"
+        android:gravity="center_vertical"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:paddingStart="16dp" />
+        android:paddingStart="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <EditText
         android:id="@+id/passwordEditText"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="44dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/edit_text_background"
         android:fontFamily="@font/poppins_semibold"
+        android:gravity="center_vertical"
         android:hint="Password"
         android:inputType="textPassword"
-        android:paddingStart="16dp" />
+        android:paddingStart="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/emailEditText"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/emailEditText"
+        app:layout_constraintTop_toBottomOf="@+id/emailEditText" />
 
     <TextView
         android:id="@+id/forgotTextView"
@@ -69,42 +97,62 @@
         android:focusable="true"
         android:fontFamily="@font/poppins_semibold"
         android:text="Forgot Password?"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/passwordEditText"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEditText" />
 
     <TextView
         android:id="@+id/loginButton"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:background="@drawable/yellow_button"
         android:fontFamily="@font/poppins_bold"
         android:gravity="center"
         android:text="LOGIN"
-        android:textColor="#383838" />
+        android:textColor="#383838"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/passwordEditText"
+        app:layout_constraintStart_toStartOf="@+id/passwordEditText"
+        app:layout_constraintTop_toBottomOf="@+id/forgotTextView" />
 
     <TextView
+        android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center"
-        android:text="OR" />
+        android:text="OR"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/googleBtn"
         android:layout_width="179dp"
-        android:layout_marginTop="8dp"
-        android:layout_height="64dp" />
+        android:layout_height="64dp"
+        android:layout_marginTop="16dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <TextView
         android:id="@+id/registerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
         android:fontFamily="@font/poppins_semibold"
         android:text="Don't have an account? Register"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/googleBtn" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

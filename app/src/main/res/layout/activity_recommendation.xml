@@ -35,11 +35,9 @@
         android:id="@+id/ivProfile"
         android:layout_width="46dp"
         android:layout_height="50dp"
-        android:layout_marginStart="124dp"
         android:contentDescription="PROFILE"
         app:layout_constraintBottom_toBottomOf="@+id/tvPickYourFood"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvPickYourFood"
+        app:layout_constraintEnd_toEndOf="@+id/rvBreaky"
         app:layout_constraintTop_toTopOf="@+id/tvHelloUser"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/group" />
@@ -77,6 +75,17 @@
         app:layout_constraintStart_toStartOf="@+id/tvMenu"
         app:layout_constraintTop_toBottomOf="@+id/tvMenu" />
 
+    <TextView
+        android:id="@+id/moreBreaky"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View More"
+        android:textColor="#BFBFBF"
+        app:layout_constraintBottom_toBottomOf="@+id/tvBreakfast"
+        app:layout_constraintEnd_toEndOf="@+id/ivProfile"
+        app:layout_constraintTop_toTopOf="@+id/tvBreakfast"
+        app:layout_constraintVertical_bias="0.5" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvBreaky"
         android:layout_width="360dp"
@@ -94,6 +103,17 @@
         app:layout_constraintStart_toStartOf="@+id/rvBreaky"
         app:layout_constraintTop_toBottomOf="@+id/rvBreaky" />
 
+    <TextView
+        android:id="@+id/moreLunch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View More"
+        android:textColor="#BFBFBF"
+        app:layout_constraintBottom_toBottomOf="@+id/tvLunch"
+        app:layout_constraintEnd_toEndOf="@+id/ivProfile"
+        app:layout_constraintTop_toTopOf="@+id/tvLunch"
+        app:layout_constraintVertical_bias="0.5" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvLunch"
         android:layout_width="360dp"
@@ -110,6 +130,17 @@
         android:textColor="@color/yellow50"
         app:layout_constraintStart_toStartOf="@+id/rvLunch"
         app:layout_constraintTop_toBottomOf="@+id/rvLunch" />
+
+    <TextView
+        android:id="@+id/moreDinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View More"
+        android:textColor="#BFBFBF"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDinner"
+        app:layout_constraintEnd_toEndOf="@+id/ivProfile"
+        app:layout_constraintTop_toTopOf="@+id/tvDinner"
+        app:layout_constraintVertical_bias="0.5" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDinner"
@@ -129,4 +160,5 @@
         app:layout_constraintVertical_bias="1.0">
 
     </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
