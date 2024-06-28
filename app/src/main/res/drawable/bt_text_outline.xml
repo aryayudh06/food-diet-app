@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Mengatur sudut dari border -->
+    <corners android:radius="20dp" />
+
+    <!-- Mengatur warna dan ketebalan border -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/mid_grey" />
+
+    <!-- Latar belakang transparan -->
+    <solid android:color="@android:color/transparent" />
+</shape>

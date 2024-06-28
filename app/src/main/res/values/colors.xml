@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow50">#F9E42A</color>
+    <color name="yellow40">#FEEC4D</color>
+    <color name="ibOff">#80808080</color>
+    <color name="ibOn">#00FFFFFF</color>
+    <color name="mid_grey">#BFBFBF</color>
+    <color name="yellow_shadow">#E7D000</color>
+</resources>
