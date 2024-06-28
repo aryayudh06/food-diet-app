@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment
 
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.ui.FoodDetailActivity
+import com.pam.gemastik_app.ui.FoodTrackingActivity
 import com.pam.gemastik_app.ui.HomeActivity
 import com.pam.gemastik_app.ui.MainActivity
 import com.pam.gemastik_app.ui.RecommendationActivity
+import com.pam.gemastik_app.ui.photoutil.CameraActivity
 
 
 /**
@@ -48,6 +50,12 @@ import com.pam.gemastik_app.ui.RecommendationActivity
             startActivity(intent)
         }
 
+        val camButton: ImageButton = view.findViewById(R.id.imageButtonCamera)
+        camButton.setOnClickListener {
+            val intent = Intent(activity, CameraActivity::class.java)
+            startActivity(intent)
+        }
+
         val saladButton: ImageButton = view.findViewById(R.id.imageButtonSalad)
         saladButton.setOnClickListener {
             val intent = Intent(activity, RecommendationActivity::class.java)
@@ -60,12 +68,16 @@ import com.pam.gemastik_app.ui.RecommendationActivity
 
         if (currentActivityName == "MainActivity") {
             saladButton.imageTintList = ColorStateList.valueOf(colorOff)
-
+            camButton.imageTintList = ColorStateList.valueOf(colorOff)
             homeButton.imageTintList = ColorStateList.valueOf(colorOn)
         } else if(currentActivityName == "FoodDetailActivity" || currentActivityName == "RecommendationActivity"){
             homeButton.imageTintList = ColorStateList.valueOf(colorOff)
-
+            camButton.imageTintList = ColorStateList.valueOf(colorOff)
             saladButton.imageTintList = ColorStateList.valueOf(colorOn)
+        } else if(currentActivityName == "FoodTrackingActivity") {
+            homeButton.imageTintList = ColorStateList.valueOf(colorOff)
+            saladButton.imageTintList = ColorStateList.valueOf(colorOff)
+            camButton.imageTintList = ColorStateList.valueOf(colorOn)
         }
 
         return view

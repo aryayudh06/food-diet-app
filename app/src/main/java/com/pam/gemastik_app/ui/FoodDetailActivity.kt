@@ -1,5 +1,6 @@
 package com.pam.gemastik_app.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -11,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityFoodDetailsBinding
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import com.pam.gemastik_app.ui.photoutil.CameraActivity
 
 class FoodDetailActivity: AppCompatActivity() {
     private lateinit var binding: ActivityFoodDetailsBinding
@@ -31,6 +33,8 @@ class FoodDetailActivity: AppCompatActivity() {
             Toast.makeText(this, "Catatan berhasil ditambahkan", Toast.LENGTH_SHORT).show()
             finish()
         }
+
+        binding.ibUploadFoto.setOnClickListener { startActivity(Intent(this, CameraActivity::class.java)) }
     }
 
     override fun onResume() {

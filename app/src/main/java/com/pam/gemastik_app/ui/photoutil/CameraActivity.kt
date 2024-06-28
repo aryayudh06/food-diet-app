@@ -25,6 +25,7 @@ import androidx.camera.video.VideoCapture
 import androidx.core.content.ContextCompat
 
 import com.pam.gemastik_app.databinding.ActivityCameraBinding
+import com.pam.gemastik_app.ui.FoodTrackingActivity
 import com.pam.gemastik_app.ui.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -81,7 +82,7 @@ class CameraActivity : AppCompatActivity() {
         // Set up the listeners for take photo and video capture buttons
         viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
         viewBinding.imageSelectButton.setOnClickListener { selectImage() }
-        viewBinding.ibBackCam.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
+        viewBinding.ibBackCam.setOnClickListener { finish() }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -121,7 +122,7 @@ class CameraActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults){
                     val msg = "Photo capture succeeded: ${output.savedUri}"
-                    val intent = Intent(this@CameraActivity, MainActivity::class.java)
+                    val intent = Intent(this@CameraActivity, FoodTrackingActivity::class.java)
                     intent.putExtra("imageUri", output.savedUri.toString())
                     startActivity(intent)
                     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
@@ -179,7 +180,7 @@ class CameraActivity : AppCompatActivity() {
                 try {
                     val imageUri: Uri? = result.data?.data
                     if (imageUri != null) {
-                        val intent = Intent(this, MainActivity::class.java)
+                        val intent = Intent(this, FoodTrackingActivity::class.java)
                         intent.putExtra("imageUri", imageUri.toString())
                         startActivity(intent)
                     } else {
