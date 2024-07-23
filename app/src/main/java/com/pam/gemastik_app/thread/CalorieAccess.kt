@@ -10,6 +10,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.pam.gemastik_app.model.UserCalorie
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -20,13 +21,13 @@ open class CalorieAccess : AppCompatActivity() {
 
     }
 
-    protected fun saveData(tb: String?, bb: String?) {
+    protected fun saveData(tb: String?, bb: String?, calorie:String?) {
         val mAuth = FirebaseAuth.getInstance()
         val database = FirebaseDatabase.getInstance()
         val databaseReference = database.getReference("calories").child(mAuth.uid!!)
         val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val dailyData = databaseReference.child("daily_data").child(currDate)
-        val dataUser = UserCalorie(tb, bb)
+        val dataUser = UserCalorie(tb, bb, calorie)
         dailyData.setValue(dataUser).addOnCompleteListener { task: Task<Void?> ->
             if (task.isSuccessful) {
                 // Data berhasil disimpan
@@ -49,8 +50,8 @@ open class CalorieAccess : AppCompatActivity() {
                 if (snapshot.exists()) {
                     val dataUser: UserCalorie? = snapshot.getValue(UserCalorie::class.java)
                     if (dataUser != null) {
-                        val currentBb: Int = dataUser.bb?.toInt() ?: 0
-                        val newBb = currentBb + valueChange
+                        val currentCal: Int = dataUser.calorie?.toInt() ?: 0
+                        val newBb = currentCal + valueChange
                         dataUser.bb = newBb.toString()
                         dailyData.setValue(dataUser).addOnCompleteListener { task: Task<Void?> ->
                             if (task.isSuccessful) {
