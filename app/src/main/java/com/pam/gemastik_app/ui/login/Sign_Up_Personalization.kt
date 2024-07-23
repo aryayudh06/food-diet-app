@@ -7,16 +7,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.R
-import com.pam.gemastik_app.data.UserData
+import com.pam.gemastik_app.model.UserData
 import com.pam.gemastik_app.databinding.ActivitySignUpPersonalizationBinding
 import com.pam.gemastik_app.ui.MainActivity
 import java.util.Calendar
