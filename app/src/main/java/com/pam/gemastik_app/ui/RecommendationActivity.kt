@@ -100,6 +100,7 @@ class RecommendationActivity : AppCompatActivity() {
                          breakyAdapter.notifyDataSetChanged()
                      }
                      override fun onCancelled(error: DatabaseError) {
+                         Log.e("Database error", error.toString())
                          Toast.makeText(this@RecommendationActivity, "Failed to load more breakfast data", Toast.LENGTH_SHORT).show()
                      }
                  })
@@ -208,7 +209,7 @@ class RecommendationActivity : AppCompatActivity() {
                     dinnerAdapter.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@RecommendationActivity, "Failed to load breakfast data", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@RecommendationActivity, "Failed to load dinner data", Toast.LENGTH_SHORT).show()
                 }
             })
         }

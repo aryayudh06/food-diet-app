@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView16"
+                android:id="@+id/tvDate"
                 android:layout_width="347dp"
                 android:layout_height="33dp"
                 android:layout_marginTop="116dp"
@@ -216,7 +216,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
             <TextView
-                android:id="@+id/tvBtnLunch"
+                android:id="@+id/tvBtnWeekBMI"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="344dp"
@@ -250,14 +250,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/rvHome"
                 android:layout_width="350dp"
                 android:layout_height="163dp"
                 android:layout_marginTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.508"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvBtnWeekBMI" />
+                app:layout_constraintTop_toBottomOf="@+id/tvBtnLunch" />
 
             <TextView
                 android:id="@+id/textViewRandom1"
@@ -291,7 +291,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
             <TextView
-                android:id="@+id/tvBtnWeekBMI"
+                android:id="@+id/tvBtnLunch"
                 android:layout_width="100dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="48dp"

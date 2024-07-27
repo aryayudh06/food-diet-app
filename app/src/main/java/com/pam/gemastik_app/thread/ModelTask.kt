@@ -19,12 +19,29 @@ class ModelTask(private val apiKey: String) {
             val inputContent = content {
                 image(img)
                 text("Apa nama makanan tersebut, jawab hanya dengan nama makanan saja. Lalu pisahkan dengan ';', berapa kandungan Kalorinya." +
-                        "Lalu pisahkan dengan ';', berapa kandungan Proteinnya. Lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
-                        "jawab hanya dengan jawaban kata tersebut")
+                        " Lalu pisahkan dengan ';', berapa kandungan Proteinnya. Lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
+                        " Jawab hanya dengan jawaban kata tersebut." + " Jika tidak ada gambar makanan terdeteksi, jawab dengan 'Tidak ada makanan terdeteksi.'")
             }
 
             val response = generativeModel.generateContent(inputContent)
             Log.d("ModelTask", response.text.toString())
+            response.text.toString()
+        }
+    }
+
+    suspend fun recipeModel(food: String): String {
+        return withContext(Dispatchers.IO) {
+            val generativeModel = GenerativeModel(
+                modelName = "gemini-1.5-flash",
+                apiKey = apiKey
+            )
+
+            val inputContent = content {
+                text("Berikan resep ${food} sehat secara lengkap. Sertakan langkah-langkah memasaknya")
+            }
+
+            val response = generativeModel.generateContent(inputContent)
+            Log.d("Recipe AI Model", response.text.toString())
             response.text.toString()
         }
     }

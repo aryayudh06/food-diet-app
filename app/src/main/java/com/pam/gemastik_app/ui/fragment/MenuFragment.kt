@@ -2,6 +2,8 @@ package com.pam.gemastik_app.ui.fragment
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import com.pam.gemastik_app.ui.FoodDetailActivity
 import com.pam.gemastik_app.ui.FoodTrackingActivity
 import com.pam.gemastik_app.ui.HomeActivity
 import com.pam.gemastik_app.ui.MainActivity
+import com.pam.gemastik_app.ui.ProfileActivity
 import com.pam.gemastik_app.ui.RecommendationActivity
 import com.pam.gemastik_app.ui.photoutil.CameraActivity
 
@@ -62,22 +65,36 @@ import com.pam.gemastik_app.ui.photoutil.CameraActivity
             startActivity(intent)
         }
 
+        val profileButton: ImageButton = view.findViewById(R.id.imageButtonUser)
+        profileButton.setOnClickListener {
+            val intent = Intent(activity, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         val colorOff = ContextCompat.getColor(requireContext(), R.color.ibOff)
         val colorOn = ContextCompat.getColor(requireContext(), R.color.ibOn)
 
 
-        if (currentActivityName == "MainActivity") {
+        if (currentActivityName == "MainActivity" || currentActivityName == "HomeActivity") {
             saladButton.imageTintList = ColorStateList.valueOf(colorOff)
             camButton.imageTintList = ColorStateList.valueOf(colorOff)
+            profileButton.imageTintList = ColorStateList.valueOf(colorOff)
             homeButton.imageTintList = ColorStateList.valueOf(colorOn)
         } else if(currentActivityName == "FoodDetailActivity" || currentActivityName == "RecommendationActivity"){
             homeButton.imageTintList = ColorStateList.valueOf(colorOff)
             camButton.imageTintList = ColorStateList.valueOf(colorOff)
+            profileButton.imageTintList = ColorStateList.valueOf(colorOff)
             saladButton.imageTintList = ColorStateList.valueOf(colorOn)
         } else if(currentActivityName == "FoodTrackingActivity") {
             homeButton.imageTintList = ColorStateList.valueOf(colorOff)
             saladButton.imageTintList = ColorStateList.valueOf(colorOff)
+            profileButton.imageTintList = ColorStateList.valueOf(colorOff)
             camButton.imageTintList = ColorStateList.valueOf(colorOn)
+        } else if(currentActivityName == "ProfileActivity") {
+            homeButton.imageTintList = ColorStateList.valueOf(colorOff)
+            camButton.imageTintList = ColorStateList.valueOf(colorOff)
+            saladButton.imageTintList = ColorStateList.valueOf(colorOff)
+            profileButton.imageTintList = ColorStateList.valueOf(colorOn)
         }
 
         return view

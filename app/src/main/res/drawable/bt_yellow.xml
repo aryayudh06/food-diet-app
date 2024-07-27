@@ -4,5 +4,5 @@
     <corners android:radius="20dp" />
 
     <!-- Latar belakang transparan -->
-    <solid android:color="@color/yellow50" />
+    <solid android:color="@color/yellow30" />
 </shape>

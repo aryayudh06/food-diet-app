@@ -9,13 +9,20 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityFoodDetailsBinding
+import com.pam.gemastik_app.thread.ModelTask
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import com.pam.gemastik_app.ui.photoutil.CameraActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class FoodDetailActivity: AppCompatActivity() {
     private lateinit var binding: ActivityFoodDetailsBinding
+    private val apiKey = BuildConfig.GEMINI_KEY
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,12 +41,12 @@ class FoodDetailActivity: AppCompatActivity() {
             finish()
         }
 
-        binding.ibUploadFoto.setOnClickListener { startActivity(Intent(this, CameraActivity::class.java)) }
     }
 
     override fun onResume() {
         super.onResume()
         if (!intent.getStringExtra("bfoto").equals("")) {
+            getRecipe()
             Glide.with(this)
                 .load(intent.getStringExtra("bfoto"))
                 .apply(RequestOptions()
@@ -48,12 +55,23 @@ class FoodDetailActivity: AppCompatActivity() {
                 .into(binding.ivBackground)
             binding.tvRecordMenu.text = intent.getStringExtra("bmenu")
             binding.tvDescription.text = intent.getStringExtra("bdesc")
-            binding.tvResep1.text = intent.getStringExtra("bingredient")
-            binding.tvResep2.text = intent.getStringExtra("tvResep2")
-            binding.tvResep3.text = intent.getStringExtra("tvResep3")
-            binding.tvResep4.text = intent.getStringExtra("tvResep4")
         } else {
             Toast.makeText(this, "Error loading food data", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun getRecipe() {
+        val runnable = Runnable {
+            if (intent.getStringExtra("bmenu") != null) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    val modelTask = ModelTask(apiKey)
+                    val menuName = intent.getStringExtra("bmenu")
+                    val responseText = menuName?.let { modelTask.recipeModel(it) }
+                    binding.tvRecipeDetail.text = responseText
+                }
+            }
+        }
+        val recipe = Thread(runnable)
+        recipe.start()
     }
 }
