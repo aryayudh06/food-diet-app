@@ -33,7 +33,7 @@
 
     <ImageView
         android:id="@+id/ivProfile"
-        android:layout_width="46dp"
+        android:layout_width="50dp"
         android:layout_height="50dp"
         android:contentDescription="PROFILE"
         app:layout_constraintBottom_toBottomOf="@+id/tvPickYourFood"
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
-        android:text="You are underweight. Eat more!"
+        android:text="You have ideal bodyweight! Keep it up!"
         android:textColor="#BFBFBF"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/tvPickYourFood"

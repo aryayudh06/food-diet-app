@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.ProfileActivity">
+
+    <ScrollView
+        android:id="@+id/svProfile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/flProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/ivProfilePic"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="21dp"
+                android:src="@drawable/group"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvProfileName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="MeatGoal"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivProfilePic" />
+
+            <TextView
+                android:id="@+id/tvProfileEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:text="MeatGoal@gmail.com"
+                android:textColor="#BFBFBF"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileName" />
+
+            <TextView
+                android:id="@+id/ibEditProfile"
+                android:layout_width="355dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/yellow_button"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:text="Edit Profile"
+                android:textAlignment="center"
+                android:textColor="#383838"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileEmail" />
+
+            <TextView
+                android:id="@+id/tvDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Details"
+                android:textAlignment="viewStart"
+                android:textColor="#E7D000"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@+id/ibEditProfile"
+                app:layout_constraintStart_toStartOf="@+id/ibEditProfile"
+                app:layout_constraintTop_toBottomOf="@+id/ibEditProfile" />
+
+            <ImageView
+                android:id="@+id/ivPencil"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/pencil"
+                app:layout_constraintEnd_toEndOf="@+id/ibEditProfile"
+                app:layout_constraintTop_toTopOf="@+id/tvDetails" />
+
+            <TextView
+                android:id="@+id/tvProfileBMI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="BMI :"
+                android:textAlignment="viewStart"
+                android:textColor="#747474"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvDetails"
+                app:layout_constraintTop_toBottomOf="@+id/tvDetails" />
+
+            <TextView
+                android:id="@+id/tvBMINumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="20.5"
+                android:textAlignment="viewEnd"
+                android:textColor="#383838"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/ibEditProfile"
+                app:layout_constraintTop_toTopOf="@+id/tvProfileBMI" />
+
+            <TextView
+                android:id="@+id/tvProfileGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Gender :"
+                android:textAlignment="viewStart"
+                android:textColor="#747474"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileBMI"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileBMI" />
+
+            <TextView
+                android:id="@+id/tvGenderText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Male"
+                android:textAlignment="viewEnd"
+                android:textColor="#383838"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvBMINumber"
+                app:layout_constraintTop_toBottomOf="@+id/tvBMINumber" />
+
+            <TextView
+                android:id="@+id/tvProfileHeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Height :"
+                android:textAlignment="viewStart"
+                android:textColor="#747474"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileGender"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileGender" />
+
+            <TextView
+                android:id="@+id/tvHeightText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="178 cm"
+                android:textAlignment="viewEnd"
+                android:textColor="#383838"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvGenderText"
+                app:layout_constraintTop_toBottomOf="@+id/tvGenderText" />
+
+            <TextView
+                android:id="@+id/tvProfileWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Weight"
+                android:textAlignment="viewStart"
+                android:textColor="#747474"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileHeight"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileHeight" />
+
+            <TextView
+                android:id="@+id/tvWeightText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="65 kg"
+                android:textAlignment="viewEnd"
+                android:textColor="#383838"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvHeightText"
+                app:layout_constraintTop_toBottomOf="@+id/tvHeightText" />
+
+            <TextView
+                android:id="@+id/tvProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Your Progress"
+                android:textAlignment="viewStart"
+                android:textColor="#F9E42A"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileWeight"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileWeight" />
+
+            <TextView
+                android:id="@+id/tvDaily"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/edit_text_background"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Daily"
+                android:textColor="#BFBFBF"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@+id/tvProgress"
+                app:layout_constraintTop_toBottomOf="@+id/tvProgress" />
+
+            <TextView
+                android:id="@+id/tvWeekly"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:background="@drawable/bt_yellow"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Weekly"
+                android:textAlignment="center"
+                android:textColor="#383838"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/tvMonthly"
+                app:layout_constraintStart_toEndOf="@+id/tvDaily"
+                app:layout_constraintTop_toTopOf="@+id/tvDaily" />
+
+            <TextView
+                android:id="@+id/tvMonthly"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_background"
+                android:fontFamily="@font/poppins_semibold"
+                android:gravity="center"
+                android:text="Monthly"
+                android:textColor="#BFBFBF"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="@+id/tvWeightText"
+                app:layout_constraintTop_toTopOf="@+id/tvDaily" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/flProfile"
+        android:name="com.pam.gemastik_app.ui.fragment.MenuFragment"
+        android:layout_width="0dp"
+        android:layout_height="68dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

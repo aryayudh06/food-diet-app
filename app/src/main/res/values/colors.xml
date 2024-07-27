@@ -4,8 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="yellow50">#F9E42A</color>
     <color name="yellow40">#FEEC4D</color>
+    <color name="yellow30">#FFF176</color>
     <color name="ibOff">#80808080</color>
     <color name="ibOn">#00FFFFFF</color>
     <color name="mid_grey">#BFBFBF</color>
     <color name="yellow_shadow">#E7D000</color>
+    <color name="text">#383838</color>
 </resources>
