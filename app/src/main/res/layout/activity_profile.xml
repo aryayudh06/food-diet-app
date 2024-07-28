@@ -14,14 +14,12 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/flProfile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/ivProfilePic"
@@ -43,7 +41,7 @@
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ivProfilePic" />
+                app:layout_constraintTop_toBottomOf="@id/ivProfilePic" />
 
             <TextView
                 android:id="@+id/tvProfileEmail"
@@ -55,7 +53,7 @@
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileName" />
+                app:layout_constraintTop_toBottomOf="@id/tvProfileName" />
 
             <TextView
                 android:id="@+id/ibEditProfile"
@@ -68,10 +66,10 @@
                 android:text="Edit Profile"
                 android:textAlignment="center"
                 android:textColor="#383838"
-                android:textSize="10sp"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileEmail" />
+                app:layout_constraintTop_toBottomOf="@id/tvProfileEmail" />
 
             <TextView
                 android:id="@+id/tvDetails"
@@ -83,17 +81,16 @@
                 android:textAlignment="viewStart"
                 android:textColor="#E7D000"
                 android:textSize="12sp"
-                app:layout_constraintStart_toEndOf="@+id/ibEditProfile"
-                app:layout_constraintStart_toStartOf="@+id/ibEditProfile"
-                app:layout_constraintTop_toBottomOf="@+id/ibEditProfile" />
+                app:layout_constraintStart_toStartOf="@id/ibEditProfile"
+                app:layout_constraintTop_toBottomOf="@id/ibEditProfile" />
 
             <ImageView
                 android:id="@+id/ivPencil"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/pencil"
-                app:layout_constraintEnd_toEndOf="@+id/ibEditProfile"
-                app:layout_constraintTop_toTopOf="@+id/tvDetails" />
+                app:layout_constraintEnd_toEndOf="@id/ibEditProfile"
+                app:layout_constraintTop_toTopOf="@id/tvDetails" />
 
             <TextView
                 android:id="@+id/tvProfileBMI"
@@ -105,8 +102,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="#747474"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvDetails"
-                app:layout_constraintTop_toBottomOf="@+id/tvDetails" />
+                app:layout_constraintStart_toStartOf="@id/tvDetails"
+                app:layout_constraintTop_toBottomOf="@id/tvDetails" />
 
             <TextView
                 android:id="@+id/tvBMINumber"
@@ -117,8 +114,8 @@
                 android:textAlignment="viewEnd"
                 android:textColor="#383838"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/ibEditProfile"
-                app:layout_constraintTop_toTopOf="@+id/tvProfileBMI" />
+                app:layout_constraintEnd_toEndOf="@id/ibEditProfile"
+                app:layout_constraintTop_toTopOf="@id/tvProfileBMI" />
 
             <TextView
                 android:id="@+id/tvProfileGender"
@@ -129,8 +126,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="#747474"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvProfileBMI"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileBMI" />
+                app:layout_constraintStart_toStartOf="@id/tvProfileBMI"
+                app:layout_constraintTop_toBottomOf="@id/tvProfileBMI" />
 
             <TextView
                 android:id="@+id/tvGenderText"
@@ -141,8 +138,8 @@
                 android:textAlignment="viewEnd"
                 android:textColor="#383838"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/tvBMINumber"
-                app:layout_constraintTop_toBottomOf="@+id/tvBMINumber" />
+                app:layout_constraintEnd_toEndOf="@id/tvBMINumber"
+                app:layout_constraintTop_toBottomOf="@id/tvBMINumber" />
 
             <TextView
                 android:id="@+id/tvProfileHeight"
@@ -153,8 +150,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="#747474"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvProfileGender"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileGender" />
+                app:layout_constraintStart_toStartOf="@id/tvProfileGender"
+                app:layout_constraintTop_toBottomOf="@id/tvProfileGender" />
 
             <TextView
                 android:id="@+id/tvHeightText"
@@ -165,8 +162,8 @@
                 android:textAlignment="viewEnd"
                 android:textColor="#383838"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/tvGenderText"
-                app:layout_constraintTop_toBottomOf="@+id/tvGenderText" />
+                app:layout_constraintEnd_toEndOf="@id/tvGenderText"
+                app:layout_constraintTop_toBottomOf="@id/tvGenderText" />
 
             <TextView
                 android:id="@+id/tvProfileWeight"
@@ -177,8 +174,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="#747474"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvProfileHeight"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileHeight" />
+                app:layout_constraintStart_toStartOf="@id/tvProfileHeight"
+                app:layout_constraintTop_toBottomOf="@id/tvProfileHeight" />
 
             <TextView
                 android:id="@+id/tvWeightText"
@@ -189,8 +186,8 @@
                 android:textAlignment="viewEnd"
                 android:textColor="#383838"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/tvHeightText"
-                app:layout_constraintTop_toBottomOf="@+id/tvHeightText" />
+                app:layout_constraintEnd_toEndOf="@id/tvHeightText"
+                app:layout_constraintTop_toBottomOf="@id/tvHeightText" />
 
             <TextView
                 android:id="@+id/tvProgress"
@@ -202,8 +199,8 @@
                 android:textAlignment="viewStart"
                 android:textColor="#F9E42A"
                 android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@+id/tvProfileWeight"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileWeight" />
+                app:layout_constraintStart_toStartOf="@id/tvProfileWeight"
+                app:layout_constraintTop_toBottomOf="@id/tvProfileWeight" />
 
             <TextView
                 android:id="@+id/tvDaily"
@@ -216,8 +213,8 @@
                 android:text="Daily"
                 android:textColor="#BFBFBF"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/tvProgress"
-                app:layout_constraintTop_toBottomOf="@+id/tvProgress" />
+                app:layout_constraintStart_toStartOf="@id/tvProgress"
+                app:layout_constraintTop_toBottomOf="@id/tvProgress" />
 
             <TextView
                 android:id="@+id/tvWeekly"
@@ -231,8 +228,8 @@
                 android:textColor="#383838"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toStartOf="@+id/tvMonthly"
-                app:layout_constraintStart_toEndOf="@+id/tvDaily"
-                app:layout_constraintTop_toTopOf="@+id/tvDaily" />
+                app:layout_constraintStart_toEndOf="@id/tvDaily"
+                app:layout_constraintTop_toTopOf="@id/tvDaily" />
 
             <TextView
                 android:id="@+id/tvMonthly"
@@ -245,17 +242,65 @@
                 android:textColor="#BFBFBF"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="@+id/tvWeightText"
-                app:layout_constraintTop_toTopOf="@+id/tvDaily" />
+                app:layout_constraintTop_toTopOf="@id/tvWeekly" />
+
+            <FrameLayout
+                android:id="@+id/chartProfile"
+                android:layout_width="0dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintEnd_toEndOf="@+id/tvMonthly"
+                app:layout_constraintStart_toStartOf="@+id/tvDaily"
+                app:layout_constraintTop_toBottomOf="@id/tvDaily" />
+
+            <TextView
+                android:id="@+id/tvRecentFoods"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Recent Foods"
+                android:textAlignment="viewStart"
+                android:textColor="#F9E42A"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/chartProfile"
+                app:layout_constraintTop_toBottomOf="@id/chartProfile" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecentFoodsProfile"
+                android:layout_width="0dp"
+                android:layout_height="154dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintEnd_toEndOf="@+id/chartProfile"
+                app:layout_constraintStart_toStartOf="@+id/chartProfile"
+                app:layout_constraintTop_toBottomOf="@+id/tvRecentFoods" />
+
+            <TextView
+                android:id="@+id/btnLogout"
+                android:layout_width="355dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/red_button"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:text="Logout"
+                android:textColor="#383838"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvRecentFoodsProfile" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <androidx.fragment.app.FragmentContainerView
+    <FrameLayout
         android:id="@+id/flProfile"
-        android:name="com.pam.gemastik_app.ui.fragment.MenuFragment"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="68dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
