@@ -20,6 +20,7 @@ import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityHomeBinding
 import com.pam.gemastik_app.model.FoodModel
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
+import com.pam.gemastik_app.ui.fragment.ChartFragment
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import java.util.Calendar
 
@@ -49,6 +50,9 @@ class HomeActivity : AppCompatActivity() {
 
         val fragment1: Fragment = MenuFragment.newInstance(this::class.java.simpleName)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_menu_container, fragment1).commit()
+
+        val barFragment: Fragment = ChartFragment.newInstance(this::class.java.simpleName)
+        supportFragmentManager.beginTransaction().replace(R.id.chartMainContainer, barFragment).commit()
 
         val calendar: Calendar = Calendar.getInstance()
         val year: Int = calendar.get(Calendar.YEAR)
