@@ -6,11 +6,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.databinding.ActivityMainBinding
+import com.pam.gemastik_app.thread.CalorieAccess
 import com.pam.gemastik_app.thread.ModelTask
 import com.pam.gemastik_app.ui.login.LoginActivity
 import com.pam.gemastik_app.ui.photoutil.CameraActivity
@@ -31,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        val calorieAccess = CalorieAccess()
+//        calorieAccess.saveData("60", "167", "2900")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
