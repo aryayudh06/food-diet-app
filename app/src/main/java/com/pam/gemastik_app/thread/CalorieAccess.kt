@@ -1,8 +1,6 @@
 package com.pam.gemastik_app.thread
 
-import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DataSnapshot
@@ -14,39 +12,38 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class CalorieAccess() {
+class CalorieAccess {
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance(BuildConfig.FB_DB_KEY)
 
-    fun getData() {
-        val databaseReference = database.getReference("calories").child(mAuth.uid!!)
-        val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val dailyData = databaseReference.child("daily_data").child(currDate)
+    fun getCalorieData(callback: (List<UserCalorie>) -> Unit) {
+        val userId = mAuth.uid ?: return
+        val databaseReference = database.getReference("calories").child(userId).child("daily_data")
 
-        val dataListener = object : ValueEventListener {
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val calorieList = mutableListOf<UserCalorie>()
                 if (snapshot.exists()) {
-                    val dataUser: UserCalorie? = snapshot.getValue(UserCalorie::class.java)
-                    if (dataUser != null) {
-                        Log.d("Calorie Data", "Tinggi Badan: ${dataUser.tb}, Berat Badan: ${dataUser.bb}, Kalori: ${dataUser.calorie}")
-                    } else {
-                        Log.d("Calorie Data", "Data tidak ditemukan")
+                    for (childSnapshot in snapshot.children) {
+                        val dataUser: UserCalorie? = childSnapshot.getValue(UserCalorie::class.java)
+                        if (dataUser != null) {
+                            calorieList.add(dataUser)
+                        }
                     }
-                } else {
-                    Log.d("Calorie Data", "Snapshot tidak ada")
                 }
+                callback(calorieList)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("Calorie Data", "Gagal mendapatkan data: ${error.message}")
+                Log.e("Calorie Data", "Failed to get data: ${error.message}")
+                callback(emptyList()) // Return empty list on error
             }
-        }
-
-        dailyData.addListenerForSingleValueEvent(dataListener)
+        })
     }
 
     fun saveData(tb: String?, bb: String?, calorie: String?) {
-        val databaseReference = database.getReference("calories").child(mAuth.uid!!)
+        val userId = mAuth.uid ?: return
+        val databaseReference = database.getReference("calories").child(userId)
         val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val dailyData = databaseReference.child("daily_data").child(currDate)
 
@@ -70,9 +67,9 @@ class CalorieAccess() {
         }
     }
 
-
     fun updateCalorie(valueChange: Int) {
-        val databaseReference = database.getReference("calories").child(mAuth.uid!!)
+        val userId = mAuth.uid ?: return
+        val databaseReference = database.getReference("calories").child(userId)
         val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val dailyData = databaseReference.child("daily_data").child(currDate)
         dailyData.addListenerForSingleValueEvent(object : ValueEventListener {

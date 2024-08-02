@@ -35,8 +35,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        val calorieAccess = CalorieAccess()
-//        calorieAccess.saveData("60", "167", "2900")
+        val calorieAccess = CalorieAccess()
+        calorieAccess.saveData("60", "167", "3200")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
