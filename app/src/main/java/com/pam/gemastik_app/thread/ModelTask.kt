@@ -18,8 +18,8 @@ class ModelTask(private val apiKey: String) {
 
             val inputContent = content {
                 image(img)
-                text("Apa nama makanan tersebut, jawab hanya dengan nama makanan saja. Lalu pisahkan dengan ';', berapa kandungan Kalorinya." +
-                        " Lalu pisahkan dengan ';', berapa kandungan Proteinnya. Lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
+                text("Apa nama makanan tersebut, jawab hanya dengan nama makanan saja. Lalu pisahkan dengan ';', berapa kandungan Kalorinya?" +
+                        "Jawab dengan menyebutkan ... kcal, lalu pisahkan dengan ';', berapa kandungan Proteinnya? Jawab dengan menyebutkan ... grams protein, lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
                         " Jawab hanya dengan jawaban kata tersebut." + " Jika tidak ada gambar makanan terdeteksi, jawab dengan 'Tidak ada makanan terdeteksi.'")
             }
 
