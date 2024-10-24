@@ -1,18 +1,18 @@
 package com.pam.gemastik_app.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.pam.gemastik_app.R
-import com.pam.gemastik_app.ui.fragment.MenuFragment.Companion
-import java.security.KeyStore.Entry
+import com.pam.gemastik_app.model.UserCalorie
+import com.pam.gemastik_app.thread.CalorieAccess
 
 /**
  * A simple [Fragment] subclass.
@@ -22,11 +22,12 @@ import java.security.KeyStore.Entry
 class ChartFragment : Fragment() {
     private lateinit var barChart: BarChart
     private var currentActivityName: String? = null
+    private val calorieAccess = CalorieAccess()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            currentActivityName = it.getString(com.pam.gemastik_app.ui.fragment.ChartFragment.ARG_ACTIVITY_NAME)
+            currentActivityName = it.getString(ARG_ACTIVITY_NAME)
         }
     }
 
@@ -38,25 +39,35 @@ class ChartFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_chart, container, false)
         barChart = view.findViewById(R.id.barchart)
 
-        setupBarChart()
+        loadCalorieData()
 
         return view
     }
 
-    private fun setupBarChart() {
-        // Example data
-        val entries = ArrayList<BarEntry>()
-        entries.add(BarEntry(1f, 10f))
-        entries.add(BarEntry(2f, 20f))
-        entries.add(BarEntry(3f, 30f))
-        entries.add(BarEntry(4f, 40f))
-        entries.add(BarEntry(5f, 50f))
+    private fun loadCalorieData() {
+        calorieAccess.getCalorieData { calorieList ->
+            if (calorieList.isNotEmpty()) {
+                val entries = mutableListOf<BarEntry>()
+                for ((index, userCalorie) in calorieList.withIndex()) {
+                    val calorieValue = userCalorie.calorie?.toFloatOrNull() ?: 0f
+                    entries.add(BarEntry(index.toFloat(), calorieValue))
+                }
+                displayChart(entries)
+            } else {
+                Log.d("Calorie Data", "No data available")
+            }
+        }
+    }
 
-        val barDataSet = BarDataSet(entries, "Your BMI")
-        barChart.description.text = "Date"
-        val data = BarData(barDataSet)
-        barChart.data = data
-        barChart.invalidate() // refresh
+    private fun displayChart(entries: List<BarEntry>) {
+        val barDataSet = BarDataSet(entries, "Calories")
+//        barDataSet.color = resources.getColor(R.color.colorAccent, null)
+        val barData = BarData(barDataSet)
+        barChart.data = barData
+        barChart.description.text = "Daily Calorie Intake"
+        barChart.setFitBars(true)
+        barChart.animateY(1000)
+        barChart.invalidate() // refresh chart
     }
 
     companion object {
