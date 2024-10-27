@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -24,6 +25,7 @@ import com.pam.gemastik_app.thread.CalorieAccess
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.ChartFragment
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import java.text.DecimalFormat
 import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
@@ -32,6 +34,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private val homeFood: MutableList<FoodModel> = ArrayList()
+
+    private val calorieAccess: CalorieAccess = CalorieAccess()
 
     private val apiKey = BuildConfig.GEMINI_KEY
 
@@ -62,7 +66,7 @@ class HomeActivity : AppCompatActivity() {
         val barFragment: Fragment = ChartFragment.newInstance(this::class.java.simpleName)
         supportFragmentManager.beginTransaction().replace(R.id.chartMainContainer, barFragment).commit()
 
-
+        loadBMI()
         val calendar: Calendar = Calendar.getInstance()
         val year: Int = calendar.get(Calendar.YEAR)
         val month: Int = calendar.get(Calendar.MONTH) + 1 // Bulan dimulai dari 0
@@ -216,4 +220,40 @@ class HomeActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun loadBMI() {
+        calorieAccess.getCalorieData { calorieList ->
+            val userCalorie = calorieList.lastOrNull()
+            if (userCalorie != null) {
+                val bbValue = userCalorie.bb?.toIntOrNull() ?: 0
+                val tbValue = userCalorie.tb?.toIntOrNull() ?: 0
+
+                if (tbValue > 0) { // Avoid division by zero
+                    val heightInMeters = tbValue / 100.0
+                    val bmi = bbValue / (heightInMeters * heightInMeters)
+                    val formattedBmi = DecimalFormat("#.##").format(bmi)
+
+                    val bmiCategory = when {
+                        bmi < 18.5 -> "Underweight"
+                        bmi in 18.5..24.9 -> "Ideal"
+                        bmi in 25.0..29.9 -> "Overweight"
+                        else -> "Obesity"
+                    }
+
+                    binding.tvBMI.text = formattedBmi
+                    binding.tvBMICategory.text = bmiCategory
+                    binding.tvHeight.text = "${tbValue}Cm"
+                    binding.tvWeight.text = "${bbValue}Kg"
+                } else {
+                    binding.tvBMI.text = "N/A"
+                }
+            } else {
+                Log.d("Calorie Data", "No data available")
+                binding.tvBMI.text = "N/A"
+                binding.tvHeight.text = "N/A"
+                binding.tvWeight.text = "N/A"
+            }
+        }
+    }
+
 }

@@ -29,6 +29,7 @@ class ChartFragment : Fragment() {
         arguments?.let {
             currentActivityName = it.getString(ARG_ACTIVITY_NAME)
         }
+        calorieAccess.saveData("167", "60", "3500")
     }
 
     override fun onCreateView(

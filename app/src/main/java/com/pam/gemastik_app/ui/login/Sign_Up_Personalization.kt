@@ -85,9 +85,13 @@ class Sign_Up_Personalization : AppCompatActivity() {
         }
 
         binding.nextButton.setOnClickListener {
-            createUserAndSaveData(email, passwd)
+            if(selectedDateOfBirth!=null){
+                createUserAndSaveData(email, passwd)
+            }
         }
+
     }
+
 
     private fun createUserAndSaveData(email: String, password: String) {
         mAuth.createUserWithEmailAndPassword(email, password)
