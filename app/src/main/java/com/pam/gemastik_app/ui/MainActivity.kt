@@ -40,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.pbModelRes.visibility = View.GONE
 
         binding.btSignOut.setOnClickListener(){
             auth.signOut()

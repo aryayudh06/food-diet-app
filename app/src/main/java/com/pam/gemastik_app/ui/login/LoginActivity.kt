@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityLoginBinding
-import com.pam.gemastik_app.ui.MainActivity
+import com.pam.gemastik_app.ui.HomeActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
         val binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MainActivity.auth = FirebaseAuth.getInstance()
+        HomeActivity.auth = FirebaseAuth.getInstance()
         supportActionBar?.title = "Login"
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(BuildConfig.CLIENT_ID)
@@ -51,9 +51,9 @@ class LoginActivity : AppCompatActivity() {
             val passwd = binding.passwordEditText.text.toString()
 
             if(email.isNotEmpty() && passwd.isNotEmpty())
-                MainActivity.auth.signInWithEmailAndPassword(email, passwd).addOnCompleteListener(){
+                HomeActivity.auth.signInWithEmailAndPassword(email, passwd).addOnCompleteListener(){
                     if(it.isSuccessful){
-                        startActivity(Intent(this, MainActivity::class.java))
+                        startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     }
                 }.addOnFailureListener(){
@@ -88,12 +88,12 @@ class LoginActivity : AppCompatActivity() {
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        MainActivity.auth.signInWithCredential(credential)
+        HomeActivity.auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
-                    val user = MainActivity.auth.currentUser
-                    startActivity(Intent(this, MainActivity::class.java))
+                    val user = HomeActivity.auth.currentUser
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
