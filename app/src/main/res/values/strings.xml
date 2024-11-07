@@ -15,4 +15,11 @@
     <!--    <string name="client_id">${BuildConfig.CLIENT_ID}</string>-->
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="sleep_notes_array">
+        <item>I slept great!</item>
+        <item>I got woken up</item>
+        <item>Struggled to sleep</item>
+        <item>Much needed sleep</item>
+        <item>Restful sleep</item>
+    </string-array>
 </resources>

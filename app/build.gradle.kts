@@ -61,6 +61,7 @@ dependencies {
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
     implementation ("com.google.android.material:material:1.12.0")
+    implementation ("androidx.health.connect:connect-client:1.1.0-alpha09")
 
     // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:21.2.0")
