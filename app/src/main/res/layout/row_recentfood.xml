@@ -10,7 +10,7 @@
         android:layout_height="44dp"
         android:background="@drawable/text_background"
         android:fontFamily="@font/poppins_semibold"
-        android:gravity="center_vertical"
+        android:gravity="start|center_vertical"
         android:hint="Recent Foods"
         android:paddingStart="16dp"
         android:textAlignment="textStart"
