@@ -15,7 +15,7 @@
         android:layout_marginTop="40dp"
         android:fontFamily="@font/poppins_semibold"
         android:text="Hello User!"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -60,7 +60,7 @@
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center_horizontal|center_vertical"
         android:text="Menu"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/tvBMINotes"
         app:layout_constraintTop_toBottomOf="@+id/tvBMINotes" />
@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Breakfast"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         app:layout_constraintStart_toStartOf="@+id/tvMenu"
         app:layout_constraintTop_toBottomOf="@+id/tvMenu" />
 
@@ -99,7 +99,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Lunch"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         app:layout_constraintStart_toStartOf="@+id/rvBreaky"
         app:layout_constraintTop_toBottomOf="@+id/rvBreaky" />
 
@@ -127,7 +127,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Dinner"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         app:layout_constraintStart_toStartOf="@+id/rvLunch"
         app:layout_constraintTop_toBottomOf="@+id/rvLunch" />
 

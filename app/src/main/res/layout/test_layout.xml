@@ -20,7 +20,7 @@
             tools:context=".ui.HomeActivity">
             <!-- Your existing views here -->
             <TextView
-                android:id="@+id/textView15"
+                android:id="@+id/HelloUser"
                 android:layout_width="256dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="36dp"

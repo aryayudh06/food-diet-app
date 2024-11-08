@@ -24,14 +24,14 @@
             tools:context=".ui.HomeActivity">
             <!-- Your existing views here -->
             <TextView
-                android:id="@+id/textView15"
+                android:id="@+id/HelloUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Hello MeatGoal!"
                 android:textAlignment="viewStart"
-                android:textColor="@color/yellow50"
+                android:textColor="@color/primary_yellow"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/cardView"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -43,10 +43,10 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Ready to meet your goal?"
                 android:textAlignment="viewStart"
-                android:textColor="@color/yellow50"
+                android:textColor="@color/primary_yellow"
                 android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="@+id/textView15"
-                app:layout_constraintTop_toBottomOf="@+id/textView15" />
+                app:layout_constraintStart_toStartOf="@+id/HelloUser"
+                app:layout_constraintTop_toBottomOf="@+id/HelloUser" />
 
             <TextView
                 android:id="@+id/tvDate"
@@ -65,7 +65,7 @@
                 android:layout_height="74dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/yellow_button"
-                app:cardBackgroundColor="#FEEC4D"
+                app:cardBackgroundColor="@color/primary_yellow"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Healthy Food For You"
-                android:textColor="@color/yellow50"
+                android:textColor="@color/primary_yellow"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/cardView"
                 app:layout_constraintTop_toBottomOf="@+id/cardView" />
@@ -194,20 +194,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/textViewRandom" />
 
             <TextView
-                android:id="@+id/tvBtnWeekBMI"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:background="@drawable/bt_yellow"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Weekly"
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/tvBtnMonthBMI"
-                app:layout_constraintStart_toEndOf="@+id/tvBtnDayBMI"
-                app:layout_constraintTop_toTopOf="@+id/tvBtnDayBMI" />
-
-            <TextView
                 android:id="@+id/tvBtnDinner"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
@@ -236,24 +222,10 @@
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Your Progress"
-                android:textColor="@color/yellow50"
+                android:textColor="@color/primary_yellow"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/rvHome"
                 app:layout_constraintTop_toBottomOf="@+id/rvHome" />
-
-            <TextView
-                android:id="@+id/tvBtnDayBMI"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/edit_text_background"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Daily"
-                android:textColor="@color/mid_grey"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@+id/textViewRandom1"
-                app:layout_constraintTop_toBottomOf="@+id/textViewRandom1" />
 
             <TextView
                 android:id="@+id/tvBtnLunch"
@@ -269,35 +241,36 @@
                 app:layout_constraintStart_toEndOf="@+id/tvBtnBreakfast"
                 app:layout_constraintTop_toTopOf="@+id/tvBtnBreakfast" />
 
-            <TextView
-                android:id="@+id/tvBtnMonthBMI"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:background="@drawable/edit_text_background"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Monthly"
-                android:textColor="@color/mid_grey"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/rvHome"
-                app:layout_constraintTop_toTopOf="@+id/tvBtnDayBMI" />
-
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 app:layout_constraintEnd_toEndOf="@+id/cardView"
-                app:layout_constraintTop_toTopOf="@+id/textView15"
+                app:layout_constraintTop_toTopOf="@+id/HelloUser"
                 app:srcCompat="@drawable/group" />
+
+            <TextView
+                android:id="@+id/tvHowHealthy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="How Healthy Have You Been?"
+                android:textAlignment="textStart"
+                android:textColor="#BFBFBF"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="@+id/textViewRandom1"
+                app:layout_constraintTop_toBottomOf="@+id/textViewRandom1" />
 
             <FrameLayout
                 android:id="@+id/chartMainContainer"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                app:layout_constraintEnd_toEndOf="@+id/tvBtnMonthBMI"
-                app:layout_constraintStart_toStartOf="@+id/tvBtnDayBMI"
-                app:layout_constraintTop_toBottomOf="@+id/tvBtnWeekBMI">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rvHome"
+                app:layout_constraintStart_toStartOf="@+id/rvHome"
+                app:layout_constraintTop_toBottomOf="@+id/tvHowHealthy">
 
             </FrameLayout>
 

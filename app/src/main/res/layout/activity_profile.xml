@@ -79,7 +79,7 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Details"
                 android:textAlignment="viewStart"
-                android:textColor="#E7D000"
+                android:textColor="@color/primary_yellow"
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="@id/ibEditProfile"
                 app:layout_constraintTop_toBottomOf="@id/ibEditProfile" />
@@ -189,69 +189,14 @@
                 app:layout_constraintEnd_toEndOf="@id/tvHeightText"
                 app:layout_constraintTop_toBottomOf="@id/tvHeightText" />
 
-            <TextView
-                android:id="@+id/tvProgress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="Your Progress"
-                android:textAlignment="viewStart"
-                android:textColor="#F9E42A"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="@id/tvProfileWeight"
-                app:layout_constraintTop_toBottomOf="@id/tvProfileWeight" />
-
-            <TextView
-                android:id="@+id/tvDaily"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/edit_text_background"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Daily"
-                android:textColor="#BFBFBF"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/tvProgress"
-                app:layout_constraintTop_toBottomOf="@id/tvProgress" />
-
-            <TextView
-                android:id="@+id/tvWeekly"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:background="@drawable/bt_yellow"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Weekly"
-                android:textAlignment="center"
-                android:textColor="#383838"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toStartOf="@+id/tvMonthly"
-                app:layout_constraintStart_toEndOf="@id/tvDaily"
-                app:layout_constraintTop_toTopOf="@id/tvDaily" />
-
-            <TextView
-                android:id="@+id/tvMonthly"
-                android:layout_width="100dp"
-                android:layout_height="30dp"
-                android:background="@drawable/edit_text_background"
-                android:fontFamily="@font/poppins_semibold"
-                android:gravity="center"
-                android:text="Monthly"
-                android:textColor="#BFBFBF"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="@+id/tvWeightText"
-                app:layout_constraintTop_toTopOf="@id/tvWeekly" />
-
             <FrameLayout
                 android:id="@+id/chartProfile"
                 android:layout_width="0dp"
                 android:layout_height="200dp"
                 android:layout_marginTop="15dp"
-                app:layout_constraintEnd_toEndOf="@+id/tvMonthly"
-                app:layout_constraintStart_toStartOf="@+id/tvDaily"
-                app:layout_constraintTop_toBottomOf="@id/tvDaily" />
+                app:layout_constraintEnd_toEndOf="@+id/tvWeightText"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileWeight"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileWeight" />
 
             <TextView
                 android:id="@+id/tvRecentFoods"
@@ -261,15 +206,27 @@
                 android:fontFamily="@font/poppins_semibold"
                 android:text="Recent Foods"
                 android:textAlignment="viewStart"
-                android:textColor="#F9E42A"
+                android:textColor="@color/primary_yellow"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@id/chartProfile"
                 app:layout_constraintTop_toBottomOf="@id/chartProfile" />
 
+            <TextView
+                android:id="@+id/tvViewAllRecentFoods"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="View All"
+                android:textAlignment="textEnd"
+                android:textColor="#BFBFBF"
+                app:layout_constraintBottom_toBottomOf="@+id/tvRecentFoods"
+                app:layout_constraintEnd_toEndOf="@+id/chartProfile"
+                app:layout_constraintTop_toTopOf="@+id/tvRecentFoods" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvRecentFoodsProfile"
                 android:layout_width="0dp"
-                android:layout_height="154dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 app:layout_constraintEnd_toEndOf="@+id/chartProfile"
                 app:layout_constraintStart_toStartOf="@+id/chartProfile"
@@ -288,8 +245,8 @@
                 android:textColor="#383838"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/rvRecentFoodsProfile"
+                app:layout_constraintStart_toStartOf="@+id/rvRecentFoodsProfile"
                 app:layout_constraintTop_toBottomOf="@+id/rvRecentFoodsProfile" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
