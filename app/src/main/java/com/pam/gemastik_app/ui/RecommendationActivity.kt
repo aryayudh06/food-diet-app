@@ -27,8 +27,13 @@ import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
 import com.pam.gemastik_app.model.FoodModel
+import com.pam.gemastik_app.thread.NotificationThreads
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.json.JSONObject
 
 class RecommendationActivity : AppCompatActivity() {
@@ -42,6 +47,7 @@ class RecommendationActivity : AppCompatActivity() {
     private lateinit var dinnerAdapter: FoodAdapter
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var notificationThreads: NotificationThreads
     private val Breaky: MutableList<FoodModel> = ArrayList()
     private val Lunch: MutableList<FoodModel> = ArrayList()
     private val Dinner: MutableList<FoodModel> = ArrayList()
@@ -62,10 +68,20 @@ class RecommendationActivity : AppCompatActivity() {
 
          fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-         val location = if(checkAndRequestPermissions()) {
-             obtainLocation()
-         } else {
-             null
+         CoroutineScope(Dispatchers.Main).launch {
+             val location = if (checkAndRequestPermissions()) {
+                 obtainLocation() // Now returns a Location or null if unsuccessful
+             } else {
+                 null
+             }
+
+             // Use location if it's not null
+             location?.let {
+                 val weatherUrl = "https://api.weatherbit.io/v2.0/current?lat=${it.latitude}&lon=${it.longitude}&key=$api_id1"
+                 getTemp(weatherUrl)
+             } ?: run {
+                 Toast.makeText(this@RecommendationActivity, "Location unavailable", Toast.LENGTH_SHORT).show()
+             }
          }
 
          val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -239,21 +255,13 @@ class RecommendationActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun obtainLocation() {
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    val weather_url1 = "https://api.weatherbit.io/v2.0/current?lat=${location.latitude}&lon=${location.longitude}&key=$api_id1"
-                    getTemp(weather_url1)
-                } else {
-                    Log.e("Location Error", "Location is null")
-                    Toast.makeText(this, "Unable to obtain location", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("Location Error", e.message ?: "Unknown error")
-                Toast.makeText(this, "An error appeared while finding locaiton", Toast.LENGTH_SHORT).show()
-            }
+    private suspend fun obtainLocation(): Location? {
+        return try {
+            fusedLocationClient.lastLocation.await()
+        } catch (e: Exception) {
+            Log.e("Location Error", e.message ?: "Unknown error")
+            null
+        }
     }
 
     private fun getTemp(weather_url1: String) {
@@ -269,6 +277,14 @@ class RecommendationActivity : AppCompatActivity() {
                     val cityName = obj2.getString("city_name")
                     Log.d("weather", "$cityName $temperature")
                     Toast.makeText(this, "City $cityName, Temp $temperature", Toast.LENGTH_SHORT).show()
+
+                    // Check if it's warm and send a hydration reminder
+                    if (temperature.toDouble() > 30.0) { // Set your desired threshold here
+                        notificationThreads.sendNotificationInThread(
+                            "It's quite warm outside! Remember to stay hydrated and drink extra water.",
+                            "Hydration Reminder"
+                        )
+                    }
                 } catch (e: Exception) {
                     Log.e("JSON Error", e.message ?: "Unknown error")
                     Toast.makeText(this, "Error parsing weather data", Toast.LENGTH_SHORT).show()
@@ -285,16 +301,18 @@ class RecommendationActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            LOCATION_PERMISSION_REQUEST_CODE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    // Permission was granted, proceed with the action
-                    obtainLocation()
-                } else {
-                    // Permission denied, show a message to the user
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission was granted; obtain the location
+                CoroutineScope(Dispatchers.Main).launch {
+                    val location = obtainLocation()
+                    location?.let {
+                        val weatherUrl = "https://api.weatherbit.io/v2.0/current?lat=${it.latitude}&lon=${it.longitude}&key=$api_id1"
+                        getTemp(weatherUrl)
+                    }
                 }
-                return
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
