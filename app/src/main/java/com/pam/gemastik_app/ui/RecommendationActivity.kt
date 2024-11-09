@@ -27,6 +27,7 @@ import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
 import com.pam.gemastik_app.model.FoodModel
+import com.pam.gemastik_app.ui.HomeActivity.Companion.auth
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import org.json.JSONObject
@@ -59,6 +60,8 @@ class RecommendationActivity : AppCompatActivity() {
          val fragment1: MenuFragment = MenuFragment.newInstance(this::class.java.simpleName)
 
          supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
+
+         binding.tvHelloUser.text = "Hello ${auth.currentUser?.displayName?: "User"}"
 
          fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
