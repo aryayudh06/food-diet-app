@@ -1,6 +1,6 @@
 package com.pam.gemastik_app.ui.login
 
-import HealthConnectTest
+import com.pam.gemastik_app.ui.healthconnect.HealthConnectTest
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityLoginBinding
 import com.pam.gemastik_app.ui.HomeActivity
 
@@ -94,7 +93,7 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = HomeActivity.auth.currentUser
-                    startActivity(Intent(this, HealthConnectTest::class.java))
+                    startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)

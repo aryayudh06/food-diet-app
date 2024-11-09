@@ -20,6 +20,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources.NotFoundException
 import android.os.Build
+import android.util.Log
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.HealthConnectClient.Companion.SDK_UNAVAILABLE
@@ -44,12 +46,17 @@ import androidx.health.connect.client.units.Length
 import androidx.health.connect.client.units.Mass
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import com.pam.gemastik_app.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InvalidObjectException
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import kotlin.random.Random
@@ -143,44 +150,44 @@ class HealthConnectManager(private val context: Context) {
      * Writes an [ExerciseSessionRecord] to Health Connect, and additionally writes underlying data for
      * the session too, such as [StepsRecord], [DistanceRecord] etc.
      */
-    suspend fun writeExerciseSession(
-        start: ZonedDateTime,
-        end: ZonedDateTime
-    ): InsertRecordsResponse {
-        return healthConnectClient.insertRecords(
-            listOf(
-                ExerciseSessionRecord(
-                    startTime = start.toInstant(),
-                    startZoneOffset = start.offset,
-                    endTime = end.toInstant(),
-                    endZoneOffset = end.offset,
-                    exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
-                    title = "My Run #${Random.nextInt(0, 60)}"
-                ),
-                StepsRecord(
-                    startTime = start.toInstant(),
-                    startZoneOffset = start.offset,
-                    endTime = end.toInstant(),
-                    endZoneOffset = end.offset,
-                    count = (1000 + 1000 * Random.nextInt(3)).toLong()
-                ),
-                DistanceRecord(
-                    startTime = start.toInstant(),
-                    startZoneOffset = start.offset,
-                    endTime = end.toInstant(),
-                    endZoneOffset = end.offset,
-                    distance = Length.meters((1000 + 100 * Random.nextInt(20)).toDouble())
-                ),
-                TotalCaloriesBurnedRecord(
-                    startTime = start.toInstant(),
-                    startZoneOffset = start.offset,
-                    endTime = end.toInstant(),
-                    endZoneOffset = end.offset,
-                    energy = Energy.calories(140 + (Random.nextInt(20)) * 0.01)
-                )
-            ) + buildHeartRateSeries(start, end)
-        )
-    }
+        suspend fun writeExerciseSession(
+            start: ZonedDateTime,
+            end: ZonedDateTime
+        ): InsertRecordsResponse {
+            return healthConnectClient.insertRecords(
+                listOf(
+                    ExerciseSessionRecord(
+                        startTime = start.toInstant(),
+                        startZoneOffset = start.offset,
+                        endTime = end.toInstant(),
+                        endZoneOffset = end.offset,
+                        exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_RUNNING,
+                        title = "My Run #${Random.nextInt(0, 60)}"
+                    ),
+                    StepsRecord(
+                        startTime = start.toInstant(),
+                        startZoneOffset = start.offset,
+                        endTime = end.toInstant(),
+                        endZoneOffset = end.offset,
+                        count = (1000 + 1000 * Random.nextInt(3)).toLong()
+                    ),
+                    DistanceRecord(
+                        startTime = start.toInstant(),
+                        startZoneOffset = start.offset,
+                        endTime = end.toInstant(),
+                        endZoneOffset = end.offset,
+                        distance = Length.meters((1000 + 100 * Random.nextInt(20)).toDouble())
+                    ),
+                    TotalCaloriesBurnedRecord(
+                        startTime = start.toInstant(),
+                        startZoneOffset = start.offset,
+                        endTime = end.toInstant(),
+                        endZoneOffset = end.offset,
+                        energy = Energy.calories(1500000.0)
+                    )
+                ) + buildHeartRateSeries(start, end)
+            )
+        }
 
     /**
      * Deletes an [ExerciseSessionRecord] and underlying data.
@@ -208,18 +215,49 @@ class HealthConnectManager(private val context: Context) {
         }
     }
 
-    suspend fun readCaloriesBurnedToday(): Double? {
+    suspend fun readCaloriesBurnedToday(): Double {
         val startOfDay = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS).toInstant()
         val endOfDay = Instant.now()
 
-        val aggregateRequest = AggregateRequest(
-            metrics = setOf(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
+        val request = ReadRecordsRequest(
+            recordType = TotalCaloriesBurnedRecord::class,
             timeRangeFilter = TimeRangeFilter.between(startOfDay, endOfDay)
         )
 
-        val aggregateData = healthConnectClient.aggregate(aggregateRequest)
-        return aggregateData[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inCalories
+        val response = healthConnectClient.readRecords(request)
+        val energyList = response.records.sumOf { it.energy.inKilocalories }
+        return energyList
+
+//        cara pake :
+//        lifecycleScope.launch {
+//            val caloriesBurned = healthConnectManager.readCaloriesBurnedToday()
+//            findViewById<TextView>(R.id.tvCalBurned).text =
+//                "Calories Burned Today: ${caloriesBurned?: "No data"} kcal"
+//            Log.d("records", caloriesBurned.toString())
+//
+//            Log.d("date", "$startOfDay $endOfDay")
+//        }
     }
+
+//    suspend fun readCaloriesBurnedToday(): Double? {
+//        // Mengambil waktu awal hari ini dalam zona waktu lokal tanpa mengonversi ke UTC
+//        val startOfDay = ZonedDateTime.now().with(LocalTime.MIN)
+//
+//        // Menggunakan akhir hari ini dalam zona waktu lokal
+//        val endOfDay = ZonedDateTime.now()
+//
+//        // Jika perlu konversi ke Instant, lakukan di sini
+//        val startOfDayInstant = LocalDateTime.now()
+//        val endOfDayInstant = LocalDateTime.now()
+//
+//        val aggregateRequest = AggregateRequest(
+//            metrics = setOf(TotalCaloriesBurnedRecord.ENERGY_TOTAL),
+//            timeRangeFilter = TimeRangeFilter.between(startOfDayInstant, endOfDayInstant)
+//        )
+//
+//        val aggregateData = healthConnectClient.aggregate(aggregateRequest)
+//        return aggregateData[TotalCaloriesBurnedRecord.ENERGY_TOTAL]?.inKilocalories
+//    }
 
 
     /**
