@@ -66,22 +66,33 @@ class FoodTrackingActivity : AppCompatActivity() {
         val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val dailyData = databaseReference.child("user_food_tracking").child(userId).child("daily_data").child(currDate)
 
-        val dataUser = mapOf(
+        val newEntry = mapOf(
             "menu" to menu,
             "calorie" to calorie,
-            "protein" to protein,
+            "protein" to protein
         )
 
-        dailyData.setValue(dataUser).addOnCompleteListener { task ->
+        dailyData.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Toast.makeText(this, "Data stored successfully", Toast.LENGTH_SHORT).show()
+                val existingData = task.result?.value as? MutableList<Map<String, String>> ?: mutableListOf()
+                existingData.add(newEntry)  // Append the new data to the existing list
+
+                dailyData.setValue(existingData).addOnCompleteListener { saveTask ->
+                    if (saveTask.isSuccessful) {
+                        Toast.makeText(this, "Data stored successfully", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, HomeActivity::class.java))
+                    } else {
+                        Toast.makeText(this, "Data saving failed: ${saveTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }.addOnFailureListener { exception ->
+                    Toast.makeText(this, "Data saving failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(this, "Data saving failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to retrieve existing data: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
-        }.addOnFailureListener { exception ->
-            Toast.makeText(this, "Data saving failed: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private fun foodRecog() {
         val runnable = Runnable {
