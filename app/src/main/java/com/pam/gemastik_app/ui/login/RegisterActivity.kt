@@ -17,7 +17,7 @@ class RegisterActivity : AppCompatActivity() {
         supportActionBar?.title = "Register"
 
         binding.registerButton.setOnClickListener(){
-            val name = binding.nameEditText.text.toString()
+            val uname = binding.nameEditText.text.toString()
             val email = binding.emailEditText.text.toString()
             val passwd = binding.passwordEditText.text.toString()
             val passConfirm = binding.confirmPasswordEditText.text.toString()
@@ -26,6 +26,7 @@ class RegisterActivity : AppCompatActivity() {
                 val bundle = Bundle()
                 bundle.putString("email", email)
                 bundle.putString("passwd", passwd)
+                bundle.putString("uname", uname)
                 val intent = Intent(this, Sign_Up_Personalization::class.java)
                 intent.putExtras(bundle)
 

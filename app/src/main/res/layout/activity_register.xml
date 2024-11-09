@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semibold"
         android:text="Welcome!"
-        android:textColor="@color/yellow50"
+        android:textColor="@color/primary_yellow"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

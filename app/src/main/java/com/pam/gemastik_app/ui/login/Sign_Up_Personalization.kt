@@ -10,11 +10,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.model.UserData
 import com.pam.gemastik_app.databinding.ActivitySignUpPersonalizationBinding
+import com.pam.gemastik_app.ui.HomeActivity
 import com.pam.gemastik_app.ui.MainActivity
 import java.util.Calendar
 
@@ -29,6 +31,7 @@ class Sign_Up_Personalization : AppCompatActivity() {
     private var currUser: FirebaseUser? = mAuth.currentUser
     private var email: String = ""
     private var passwd: String = ""
+    private var uname: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +42,7 @@ class Sign_Up_Personalization : AppCompatActivity() {
         if (bundle != null) {
             email = bundle.getString("email").toString()
             passwd = bundle.getString("passwd").toString()
+            uname = bundle.getString("uname").toString()
         }
 
         val genderSpinner = binding.genderSpinner
@@ -99,7 +103,17 @@ class Sign_Up_Personalization : AppCompatActivity() {
                 if (task.isSuccessful) {
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { signInTask ->
                         if (signInTask.isSuccessful) {
-                            saveDataToFirebase()
+                            val user = mAuth.currentUser
+                            val profileUpdates = UserProfileChangeRequest.Builder()
+                                .setDisplayName(uname) // Replace with the actual username
+                                .build()
+                            user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    saveDataToFirebase()
+                                } else {
+                                    Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                                }
+                            }
                         } else {
                             Toast.makeText(this, signInTask.exception?.localizedMessage, Toast.LENGTH_LONG).show()
                         }
@@ -116,7 +130,7 @@ class Sign_Up_Personalization : AppCompatActivity() {
         databaseReference.child("user_personalization").child(userId).setValue(userData)
             .addOnSuccessListener {
                 Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_LONG).show()
-                startActivity(Intent(this, MainActivity::class.java))
+                startActivity(Intent(this, HomeActivity::class.java))
                 finish()
             }
             .addOnFailureListener { e ->
