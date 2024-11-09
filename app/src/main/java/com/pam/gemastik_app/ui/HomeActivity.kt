@@ -4,10 +4,23 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.units.Mass
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.data.BarEntry
 import com.google.firebase.FirebaseApp
@@ -22,11 +35,23 @@ import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityHomeBinding
 import com.pam.gemastik_app.model.FoodModel
+import com.pam.gemastik_app.model.Permission
+import com.pam.gemastik_app.model.healthconnect.HealthConnectAppInfo
+import com.pam.gemastik_app.model.healthconnect.HealthConnectManager
+import com.pam.gemastik_app.model.healthconnect.WeightData
+import com.pam.gemastik_app.model.healthconnect.dateTimeWithOffsetOrDefault
 import com.pam.gemastik_app.thread.CalorieAccess
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.ChartFragment
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import kotlinx.coroutines.launch
+import org.checkerframework.common.returnsreceiver.qual.This
 import java.text.DecimalFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
@@ -35,6 +60,9 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private val homeFood: MutableList<FoodModel> = ArrayList()
+    private lateinit var healthConnectManager: HealthConnectManager
+    private lateinit var healthConnectCompatibleApps:  Map<String, HealthConnectAppInfo>
+    private var readingsList: MutableState<List<WeightData>> = mutableStateOf(listOf())
 
     private val calorieAccess: CalorieAccess = CalorieAccess()
 
@@ -44,11 +72,36 @@ class HomeActivity : AppCompatActivity() {
         lateinit var auth: FirebaseAuth
     }
 
+    val permissions = setOf(
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(ExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(HeartRateRecord::class),
+        HealthPermission.getWritePermission(StepsRecord::class),
+        HealthPermission.getWritePermission(DistanceRecord::class),
+        HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        healthConnectManager = HealthConnectManager(this)
+        healthConnectCompatibleApps = healthConnectManager.healthConnectCompatibleApps
+
+        lifecycleScope.launch{
+            if (healthConnectManager.hasAllPermissions(permissions)) {
+                Permission.exercisePermission = true
+                Permission.caloriesBurnedPermission = true
+                Permission.distancePermission = true
+                Permission.stepsPermission = true
+                Permission.heartRatePermission = true
+
+                loadHealthData()
+            }
+        }
 
         FirebaseApp.initializeApp(this)
 
@@ -259,4 +312,11 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun loadHealthData() {
+        lifecycleScope.launch {
+            val remaining = calorieAccess.getRemainingCalories(healthConnectManager.readCaloriesBurnedToday())
+            calorieAccess.updateCalories("-$remaining")
+            calorieAccess.updateBurnedCalories(remaining)
+        }
+    }
 }

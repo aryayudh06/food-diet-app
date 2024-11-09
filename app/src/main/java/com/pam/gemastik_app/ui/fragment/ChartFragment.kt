@@ -29,7 +29,7 @@ class ChartFragment : Fragment() {
         arguments?.let {
             currentActivityName = it.getString(ARG_ACTIVITY_NAME)
         }
-        calorieAccess.saveData("167", "60", "3500")
+//        calorieAccess.saveData("167", "60", "3500")
     }
 
     override fun onCreateView(
@@ -61,7 +61,7 @@ class ChartFragment : Fragment() {
     }
 
     private fun displayChart(entries: List<BarEntry>) {
-        val barDataSet = BarDataSet(entries, "Calories")
+        val barDataSet = BarDataSet(entries, "Calories (Kcal)")
 //        barDataSet.color = resources.getColor(R.color.colorAccent, null)
         val barData = BarData(barDataSet)
         barChart.data = barData
