@@ -69,6 +69,10 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.ibSmartwatchConnect.setOnClickListener {
+
+        }
+
         binding.btnLogout.setOnClickListener {
             HomeActivity.auth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))

@@ -14,8 +14,12 @@ import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityDailyRecentFoodsBinding
 import com.pam.gemastik_app.model.DailyRecentFoodsModel
 import com.pam.gemastik_app.model.RecentFoodsModel
+import com.pam.gemastik_app.ui.HomeActivity.Companion.auth
 import com.pam.gemastik_app.ui.adapter.DailyRecentFoodsAdapter
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DailyRecentFoodsActivity : AppCompatActivity() {
 
@@ -28,6 +32,10 @@ class DailyRecentFoodsActivity : AppCompatActivity() {
     private lateinit var dailyFoodsAdapter: DailyRecentFoodsAdapter
 
     private val dailyFoodsList = mutableListOf<DailyRecentFoodsModel>()
+
+    val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+    private val calorieIntake: MutableList<RecentFoodsModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +52,10 @@ class DailyRecentFoodsActivity : AppCompatActivity() {
         dailyFoodsAdapter = DailyRecentFoodsAdapter(this, dailyFoodsList)
         binding.rvDailyFoods.adapter = dailyFoodsAdapter
 
+        binding.tvHelloUser.text = "Hello ${auth.currentUser?.displayName?: "User"}"
+
         fetchDailyFoods()
+        calorieIntakeCalc()
     }
 
     private fun fetchDailyFoods() {
@@ -79,6 +90,42 @@ class DailyRecentFoodsActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    private fun calorieIntakeCalc() {
+        val userId = mAuth.currentUser?.uid ?: return
+        val dailyDataRef = databaseReference.child("user_food_tracking").child(userId).child("daily_data").child(currDate)
+
+        dailyDataRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                calorieIntake.clear()
+                var totalCalories = 0
+
+                for (dataSnapshot in snapshot.children) {
+                    val recent = dataSnapshot.getValue(RecentFoodsModel::class.java)
+                    if (recent != null) {
+                        calorieIntake.add(recent)
+
+                        val calorieValue = recent.calorie?.replace(" kcal", "")?.toIntOrNull()
+                        if (calorieValue != null) {
+                            totalCalories += calorieValue
+                        }
+                    }
+                }
+
+                if (calorieIntake.isEmpty()) {
+                    binding.tvCalorieIntake.text = "Total Calories Intake Today: 0 kcal"
+                } else {
+                    binding.tvCalorieIntake.text = "Total Calories Intake Today: ${totalCalories} kcal"
+                }
+
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@DailyRecentFoodsActivity, "Failed to load recent foods data", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
 
