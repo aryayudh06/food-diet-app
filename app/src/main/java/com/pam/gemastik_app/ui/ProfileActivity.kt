@@ -100,30 +100,17 @@ class ProfileActivity : AppCompatActivity() {
         }
 
 
-        healthConnectManager = HealthConnectManager(this)
+        setupHealthConnectPermissions()
 
-        requestPermissionsLauncher = registerForActivityResult(
-            healthConnectManager.requestPermissionsActivityContract()
-        ) { grantedPermissions ->
-            if (grantedPermissions.containsAll(permissions)) {
-                Permission.exercisePermission = true
-                Permission.caloriesBurnedPermission = true
-                Permission.distancePermission = true
-                Permission.stepsPermission = true
-                Permission.heartRatePermission = true
-
-                Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Log.d("hc test", "Permissions not granted in launcher callback")
-                Toast.makeText(
-                    this,
-                    "Permissions required to access health data",
-                    Toast.LENGTH_SHORT
-                ).show()
+        if(binding.ibSmartwatchConnect.isEnabled) {
+            binding.ibSmartwatchConnect.setOnClickListener {
+                requestPermissionsLauncher.launch(permissions)
+                if (Permission.caloriesBurnedPermission) {
+                    binding.ibSmartwatchConnect.isEnabled = false
+                    binding.ibSmartwatchConnect.text = "Already Connected to Smartwatch"
+                }
             }
         }
-
-        setupSmartwatchButton()
 
 
         binding.btnLogout.setOnClickListener {
@@ -133,47 +120,49 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupSmartwatchButton() {
-        binding.ibSmartwatchConnect.apply {
-            if (Permission.caloriesBurnedPermission) {
-                isEnabled = false
-                text = "Already Connected"
-            } else {
-                isEnabled = true
-                setOnClickListener {
-                    requestPermissionsLauncher.launch(permissions)
-                }
-            }
-        }
-    }
-
-
-    private fun integrateSmartwatch() {
+    private fun setupHealthConnectPermissions() {
         healthConnectManager = HealthConnectManager(this)
-        var requestPermissionsLauncher = registerForActivityResult(
+
+        requestPermissionsLauncher = registerForActivityResult(
             healthConnectManager.requestPermissionsActivityContract()
         ) { grantedPermissions ->
             if (grantedPermissions.containsAll(permissions)) {
-                Permission.exercisePermission = true
-                Permission.caloriesBurnedPermission = true
-                Permission.distancePermission = true
-                Permission.stepsPermission = true
-                Permission.heartRatePermission = true
-
+                Permission.apply {
+                    exercisePermission = true
+                    caloriesBurnedPermission = true
+                    distancePermission = true
+                    stepsPermission = true
+                    heartRatePermission = true
+                }
+                setupSmartwatchButtonState(true)
                 Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
             } else {
-                Log.d("hc test", "Permissions not granted in launcher callback")
-                Toast.makeText(
-                    this,
-                    "Permissions required to access health data",
-                    Toast.LENGTH_SHORT
-                ).show()
+                setupSmartwatchButtonState(false)
+                Toast.makeText(this, "Permissions required to access health data", Toast.LENGTH_SHORT).show()
             }
         }
 
-        requestPermissionsLauncher.launch(permissions)
+        setupSmartwatchButton()
     }
 
+    private fun setupSmartwatchButtonState(isConnected: Boolean) {
+        binding.ibSmartwatchConnect.apply {
+            isEnabled = !isConnected
+            text = if (isConnected) "Already Connected to Smartwatch" else "Connect to Smartwatch"
+            setBackgroundResource(
+                if (isConnected) R.drawable.green_button
+                else R.drawable.bluetooth_button
+            )
+
+        }
+    }
+
+    private fun setupSmartwatchButton() {
+        binding.ibSmartwatchConnect.setOnClickListener {
+            requestPermissionsLauncher.launch(permissions)
+        }
+        setupSmartwatchButtonState(Permission.caloriesBurnedPermission)
+    }
 
     private fun fetchRecentFoods() {
         val userId = mAuth.currentUser?.uid ?: return
