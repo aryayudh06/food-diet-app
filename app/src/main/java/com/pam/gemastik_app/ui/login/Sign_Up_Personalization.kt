@@ -16,9 +16,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.model.UserData
 import com.pam.gemastik_app.databinding.ActivitySignUpPersonalizationBinding
-import com.pam.gemastik_app.ui.HomeActivity
-import com.pam.gemastik_app.ui.MainActivity
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class Sign_Up_Personalization : AppCompatActivity() {
     private lateinit var binding: ActivitySignUpPersonalizationBinding
@@ -45,96 +45,116 @@ class Sign_Up_Personalization : AppCompatActivity() {
             uname = bundle.getString("uname").toString()
         }
 
-        val genderSpinner = binding.genderSpinner
+        setupGenderSpinner()
+        setupMedsSpinner()
+        setupDatePicker()
+
+        binding.nextButton.setOnClickListener {
+            if (selectedDateOfBirth != null) {
+                createUserAndSaveData(email, passwd)
+            } else {
+                Toast.makeText(this, "Please select your date of birth", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupGenderSpinner() {
         val genderAdapter = ArrayAdapter.createFromResource(this, R.array.gender, android.R.layout.simple_spinner_item)
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        genderSpinner.adapter = genderAdapter
-        genderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.genderSpinner.adapter = genderAdapter
+        binding.genderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 selectedGender = parent.getItemAtPosition(position).toString()
-                Toast.makeText(parent.context, "Selected: $selectedGender", Toast.LENGTH_LONG).show()
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+    }
 
-        val medsSpinner = binding.medsSpinner
+    private fun setupMedsSpinner() {
         val medsAdapter = ArrayAdapter.createFromResource(this, R.array.meds, android.R.layout.simple_spinner_item)
         medsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        medsSpinner.adapter = medsAdapter
-        medsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.medsSpinner.adapter = medsAdapter
+        binding.medsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 selectedMed = parent.getItemAtPosition(position).toString()
-                Toast.makeText(parent.context, "Selected: $selectedMed", Toast.LENGTH_LONG).show()
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+    }
 
+    private fun setupDatePicker() {
         binding.selectDateOfBirth.setOnClickListener {
             val calendar = Calendar.getInstance()
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
             val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-            val datePickerDialog = DatePickerDialog(this@Sign_Up_Personalization, DatePickerDialog.OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
+            val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, dayOfMonth ->
                 selectedDateOfBirth = "$dayOfMonth/${selectedMonth + 1}/$selectedYear"
                 binding.selectDateOfBirth.text = selectedDateOfBirth
             }, year, month, day)
             datePickerDialog.show()
         }
-
-        binding.nextButton.setOnClickListener {
-            if(selectedDateOfBirth!=null){
-                createUserAndSaveData(email, passwd)
-            }
-        }
-
     }
 
+    private fun calculateAge(selectedDateOfBirth: String?): Int {
+        selectedDateOfBirth?.let {
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateOfBirth = sdf.parse(it)
+            if (dateOfBirth != null) {
+                val dobCalendar = Calendar.getInstance()
+                dobCalendar.time = dateOfBirth
+
+                val today = Calendar.getInstance()
+                var age = today.get(Calendar.YEAR) - dobCalendar.get(Calendar.YEAR)
+
+                if (today.get(Calendar.DAY_OF_YEAR) < dobCalendar.get(Calendar.DAY_OF_YEAR)) {
+                    age--
+                }
+                return age
+            }
+        }
+        return 0
+    }
 
     private fun createUserAndSaveData(email: String, password: String) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener { signInTask ->
-                        if (signInTask.isSuccessful) {
-                            val user = mAuth.currentUser
-                            val profileUpdates = UserProfileChangeRequest.Builder()
-                                .setDisplayName(uname) // Replace with the actual username
-                                .build()
-                            user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    saveDataToFirebase()
-                                } else {
-                                    Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                        } else {
-                            Toast.makeText(this, signInTask.exception?.localizedMessage, Toast.LENGTH_LONG).show()
-                        }
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                val user = mAuth.currentUser
+                val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(uname).build()
+                user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        saveDataToFirebase()
+                    } else {
+                        Toast.makeText(this, "Failed to update profile: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
-                } else {
-                    Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                 }
+            } else {
+                Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
             }
+        }
     }
 
     private fun saveDataToFirebase() {
+        val age = calculateAge(selectedDateOfBirth)
+
+        val sendBundle = Bundle()
+        sendBundle.putString("gender", selectedGender)
+        sendBundle.putInt("age", age)
+
+        val intent = Intent(this, UserDataActivity::class.java)
+        intent.putExtras(sendBundle)
+
         val userId = mAuth.currentUser?.uid ?: return
         val userData = UserData(selectedGender, selectedMed, selectedDateOfBirth)
-        databaseReference.child("user_personalization").child(userId).setValue(userData)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_LONG).show()
-                startActivity(Intent(this, HomeActivity::class.java))
-                finish()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to save data: ${e.message}", Toast.LENGTH_LONG).show()
-            }
+        databaseReference.child("user_personalization").child(userId).setValue(userData).addOnSuccessListener {
+            Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_LONG).show()
+            startActivity(intent)
+            finish()
+        }.addOnFailureListener { e ->
+            Toast.makeText(this, "Failed to save data: ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 }
