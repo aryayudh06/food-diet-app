@@ -44,6 +44,30 @@ class CalorieAccess {
         })
     }
 
+    fun getPersonalization(onResult: (String?) -> Unit){
+        val userId = mAuth.uid ?: return
+        val databaseReference = database.getReference("user_personalization").child(userId).child("med")
+
+        databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Retrieve the value of "med"
+                val medValue = snapshot.getValue(String::class.java)
+                if (medValue != null) {
+                    Log.d("Personalization", "Med value: $medValue")
+                    onResult(medValue)
+                } else {
+                    Log.d("Personalization", "No med value found")
+                    onResult(null)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("Personalization", "Failed to retrieve med value", error.toException())
+                onResult(null)
+            }
+        })
+    }
+
     fun updateCalories(calorie: String?) {
         val userId = mAuth.uid ?: return
         val databaseReference = database.getReference("calories").child(userId)
@@ -90,7 +114,7 @@ class CalorieAccess {
     private suspend fun getBurnedCalories(): Double {
         val userId = mAuth.uid ?: return 0.0
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val databaseReference = database.getReference("calorie").child(userId).child("burned_calorie").child(currentDate)
+        val databaseReference = database.getReference("daily_burned_calorie").child(userId).child("burned_calorie").child(currentDate)
 
         try {
             // Mengambil data burned_calories dari Firebase secara langsung
@@ -110,7 +134,7 @@ class CalorieAccess {
     fun updateBurnedCalories(newCaloriesBurned: Double) {
         val userId = FirebaseAuth.getInstance().uid ?: return
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val databaseReference = database.getReference("calorie").child(userId).child("burned_calorie").child(currentDate)
+        val databaseReference = database.getReference("daily_burned_calorie").child(userId).child("burned_calorie").child(currentDate)
 
         databaseReference.runTransaction(object : Transaction.Handler {
             override fun doTransaction(currentData: MutableData): Transaction.Result {

@@ -21,7 +21,7 @@ class ModelTask(private val apiKey: String) {
                 text("Apa nama makanan tersebut, jawab hanya dengan nama makanan saja. Lalu pisahkan dengan ';', berapa kandungan Kalorinya?" +
                         "Jawab dengan menyebutkan ... kcal, lalu pisahkan dengan ';', berapa kandungan Proteinnya? Jawab dengan menyebutkan ... grams protein, lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
                         " Jawab hanya dengan jawaban kata tersebut." + " Jika tidak ada gambar makanan terdeteksi, jawab dengan 'Tidak ada makanan terdeteksi.'")
-            }
+            } 
 
             val response = generativeModel.generateContent(inputContent)
             Log.d("ModelTask", response.text.toString())

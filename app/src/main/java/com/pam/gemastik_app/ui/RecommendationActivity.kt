@@ -26,10 +26,16 @@ import com.google.firebase.database.ValueEventListener
 import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
+import com.pam.gemastik_app.ml.FoodClassificationModel
 import com.pam.gemastik_app.model.FoodModel
+import com.pam.gemastik_app.thread.CalorieAccess
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import org.json.JSONObject
+import org.tensorflow.lite.DataType
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class RecommendationActivity : AppCompatActivity() {
 
@@ -42,6 +48,7 @@ class RecommendationActivity : AppCompatActivity() {
     private lateinit var dinnerAdapter: FoodAdapter
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var calorieAccess: CalorieAccess
     private val Breaky: MutableList<FoodModel> = ArrayList()
     private val Lunch: MutableList<FoodModel> = ArrayList()
     private val Dinner: MutableList<FoodModel> = ArrayList()
@@ -62,11 +69,7 @@ class RecommendationActivity : AppCompatActivity() {
 
          fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-         val location = if(checkAndRequestPermissions()) {
-             obtainLocation()
-         } else {
-             null
-         }
+         var reccomd = calculateRecommendation()
 
          val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
          val lunchLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -239,12 +242,20 @@ class RecommendationActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun obtainLocation() {
+    private fun obtainLocation(onResult: (String?) -> Unit) {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
                     val weather_url1 = "https://api.weatherbit.io/v2.0/current?lat=${location.latitude}&lon=${location.longitude}&key=$api_id1"
-                    getTemp(weather_url1)
+                    getTemp({ temperature ->
+                        if (temperature != "0") {
+                            // Successfully received temperature data
+                            onResult(temperature)
+                        } else {
+                            // Handle the error case
+                            println("Failed to retrieve temperature data")
+                        }
+                    }, weather_url1)
                 } else {
                     Log.e("Location Error", "Location is null")
                     Toast.makeText(this, "Unable to obtain location", Toast.LENGTH_SHORT).show()
@@ -256,7 +267,7 @@ class RecommendationActivity : AppCompatActivity() {
             }
     }
 
-    private fun getTemp(weather_url1: String) {
+    private fun getTemp(onResult: (String?) -> Unit, weather_url1: String) {
         val queue = Volley.newRequestQueue(this)
 
         val stringReq = StringRequest(Request.Method.GET, weather_url1,
@@ -269,18 +280,44 @@ class RecommendationActivity : AppCompatActivity() {
                     val cityName = obj2.getString("city_name")
                     Log.d("weather", "$cityName $temperature")
                     Toast.makeText(this, "City $cityName, Temp $temperature", Toast.LENGTH_SHORT).show()
+                    onResult(temperature)
                 } catch (e: Exception) {
                     Log.e("JSON Error", e.message ?: "Unknown error")
                     Toast.makeText(this, "Error parsing weather data", Toast.LENGTH_SHORT).show()
+                    onResult("27")
                 }
             },
             { error ->
                 Log.e("Volley Error", error.message ?: "Unknown error")
                 Toast.makeText(this, "Failed to obtain weather data", Toast.LENGTH_SHORT).show()
+                onResult("27")
             }
         )
 
         queue.add(stringReq)
+    }
+
+    private fun calculateRecommendation(): String {
+        val location = if(checkAndRequestPermissions()) {
+            calorieAccess = CalorieAccess()
+            var persona = ""
+            var temp = ""
+            calorieAccess.getPersonalization { data ->
+                if (data != null) {
+                    persona = data
+                }
+            }
+            obtainLocation { temperature ->
+                if (temperature != null) {
+                    temp = temperature
+                }
+            }
+            var classified = classifyData(persona, temp)
+            Log.d("classified", classified)
+            return classified
+        } else {
+            return "Unknown"
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -289,7 +326,7 @@ class RecommendationActivity : AppCompatActivity() {
             LOCATION_PERMISSION_REQUEST_CODE -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Permission was granted, proceed with the action
-                    obtainLocation()
+                    calculateRecommendation()
                 } else {
                     // Permission denied, show a message to the user
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
@@ -297,5 +334,49 @@ class RecommendationActivity : AppCompatActivity() {
                 return
             }
         }
+    }
+
+    private fun classifyData(condition: String, temp: String?): String {
+        // Load the model
+        val model = FoodClassificationModel.newInstance(this)
+
+        // Retrieve the condition array from resources
+        val medsArray = resources.getStringArray(R.array.meds)
+
+        // Get the index of the condition in medsArray
+        var conditionIndex = medsArray.indexOf(condition).toFloat() // Convert to float for the model input
+        if (conditionIndex == -1f) {
+            // If condition is not found, return "Unknown"
+            conditionIndex = 0F
+        }
+
+        // Parse temp to a float, or use a default value if null
+        val temperature = temp?.toFloatOrNull() ?: 25.0f // Default to 25°C if temp is null or invalid
+
+        // Prepare input tensor
+        val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 2), DataType.FLOAT32)
+
+        // Convert input data into a ByteBuffer
+        val byteBuffer = ByteBuffer.allocateDirect(2 * 4) // 2 inputs, each 4 bytes (float)
+        byteBuffer.order(ByteOrder.nativeOrder())
+        byteBuffer.putFloat(conditionIndex)
+        byteBuffer.putFloat(temperature)
+
+        inputFeature0.loadBuffer(byteBuffer)
+
+        // Run model inference and get results
+        val outputs = model.process(inputFeature0)
+        val outputFeature0 = outputs.outputFeature0AsTensorBuffer
+
+        // Post-process the output (assume it’s a probability array)
+        val confidences = outputFeature0.floatArray
+        val foodLabels = listOf("Ayam bakar", "Oatmeal", "Nasi goreng")
+        val maxIndex = confidences.indices.maxByOrNull { confidences[it] } ?: -1
+
+        // Close the model to release resources
+        model.close()
+
+        // Return the label with the highest confidence
+        return if (maxIndex != -1) foodLabels[maxIndex] else "Unknown"
     }
 }
