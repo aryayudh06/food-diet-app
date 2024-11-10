@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.login.UserDataActivity">
+
+
+    <TextView
+        android:id="@+id/tvWeightInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="256dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Weight"
+        android:textAlignment="textStart"
+        android:textColor="#999999"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etWeightInput"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/edit_text_background"
+        android:ems="10"
+        android:fontFamily="@font/poppins_semibold"
+        android:hint="Enter your weight"
+        android:inputType="text"
+        android:paddingStart="16dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvWeightInput" />
+
+    <TextView
+        android:id="@+id/tvHeightInput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Height"
+        android:textAlignment="textStart"
+        android:textColor="#999999"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etWeightInput" />
+
+    <EditText
+        android:id="@+id/etHeightInput"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/edit_text_background"
+        android:ems="10"
+        android:fontFamily="@font/poppins_semibold"
+        android:hint="Enter your height"
+        android:inputType="text"
+        android:paddingStart="16dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvHeightInput" />
+
+    <TextView
+        android:id="@+id/tvActIntensity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="Activity Intensity"
+        android:textAlignment="textStart"
+        android:textColor="#999999"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etHeightInput" />
+
+    <Spinner
+        android:id="@+id/actSpinner"
+        style="@style/Spinner.PoppinsSemibold10sp020202"
+        android:layout_width="0dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvActIntensity" />
+
+    <TextView
+        android:id="@+id/tvNextButton"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/yellow_button"
+        android:fontFamily="@font/poppins_bold"
+        android:gravity="center"
+        android:text="NEXT"
+        android:textColor="#383838"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/actSpinner"
+        app:layout_constraintStart_toStartOf="@+id/actSpinner" />
+
+    <TextView
+        android:id="@+id/tvWeightKg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="kg"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/etWeightInput"
+        app:layout_constraintEnd_toEndOf="@+id/etWeightInput"
+        app:layout_constraintTop_toTopOf="@+id/etWeightInput" />
+
+    <TextView
+        android:id="@+id/tvHeightCm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/poppins_semibold"
+        android:text="cm"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/etHeightInput"
+        app:layout_constraintEnd_toEndOf="@+id/etHeightInput"
+        app:layout_constraintTop_toTopOf="@+id/etHeightInput" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
