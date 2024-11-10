@@ -3,9 +3,18 @@ package com.pam.gemastik_app.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -15,14 +24,19 @@ import com.google.firebase.database.ValueEventListener
 import com.pam.gemastik_app.BuildConfig
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.databinding.ActivityProfileBinding
+import com.pam.gemastik_app.model.Permission
 import com.pam.gemastik_app.model.RecentFoodsModel
+import com.pam.gemastik_app.model.healthconnect.HealthConnectManager
 import com.pam.gemastik_app.thread.CalorieAccess
 import com.pam.gemastik_app.ui.adapter.RecentFoodsAdapter
 import com.pam.gemastik_app.ui.fragment.ChartFragment
 import com.pam.gemastik_app.ui.fragment.MenuFragment
 import com.pam.gemastik_app.ui.login.LoginActivity
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.Date
 import java.util.Locale
 
@@ -31,6 +45,9 @@ class ProfileActivity : AppCompatActivity() {
 
     private var firebaseDatabase: FirebaseDatabase = FirebaseDatabase.getInstance(BuildConfig.FB_DB_KEY)
     private var databaseReference: DatabaseReference = firebaseDatabase.getReference()
+    private lateinit var requestPermissionsLauncher: ActivityResultLauncher<Set<String>>
+    private lateinit var healthConnectManager: HealthConnectManager
+    private var permissionsGranted: Boolean = false
     private val mAuth = HomeActivity.auth
 
     private lateinit var recentFoodsAdapter: RecentFoodsAdapter
@@ -39,6 +56,19 @@ class ProfileActivity : AppCompatActivity() {
     val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
     private val calorieAccess: CalorieAccess = CalorieAccess()
+
+    //LATEINIT ERROR
+
+    val permissions = setOf(
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(ExerciseSessionRecord::class),
+        HealthPermission.getWritePermission(HeartRateRecord::class),
+        HealthPermission.getWritePermission(StepsRecord::class),
+        HealthPermission.getWritePermission(DistanceRecord::class),
+        HealthPermission.getWritePermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+//        HealthPermission.getReadPermission()
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,9 +99,32 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.ibSmartwatchConnect.setOnClickListener {
 
+        healthConnectManager = HealthConnectManager(this)
+
+        requestPermissionsLauncher = registerForActivityResult(
+            healthConnectManager.requestPermissionsActivityContract()
+        ) { grantedPermissions ->
+            if (grantedPermissions.containsAll(permissions)) {
+                Permission.exercisePermission = true
+                Permission.caloriesBurnedPermission = true
+                Permission.distancePermission = true
+                Permission.stepsPermission = true
+                Permission.heartRatePermission = true
+
+                Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d("hc test", "Permissions not granted in launcher callback")
+                Toast.makeText(
+                    this,
+                    "Permissions required to access health data",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
+
+        setupSmartwatchButton()
+
 
         binding.btnLogout.setOnClickListener {
             HomeActivity.auth.signOut()
@@ -79,6 +132,48 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
     }
+
+    private fun setupSmartwatchButton() {
+        binding.ibSmartwatchConnect.apply {
+            if (Permission.caloriesBurnedPermission) {
+                isEnabled = false
+                text = "Already Connected"
+            } else {
+                isEnabled = true
+                setOnClickListener {
+                    requestPermissionsLauncher.launch(permissions)
+                }
+            }
+        }
+    }
+
+
+    private fun integrateSmartwatch() {
+        healthConnectManager = HealthConnectManager(this)
+        var requestPermissionsLauncher = registerForActivityResult(
+            healthConnectManager.requestPermissionsActivityContract()
+        ) { grantedPermissions ->
+            if (grantedPermissions.containsAll(permissions)) {
+                Permission.exercisePermission = true
+                Permission.caloriesBurnedPermission = true
+                Permission.distancePermission = true
+                Permission.stepsPermission = true
+                Permission.heartRatePermission = true
+
+                Toast.makeText(this, "All permissions granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d("hc test", "Permissions not granted in launcher callback")
+                Toast.makeText(
+                    this,
+                    "Permissions required to access health data",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        requestPermissionsLauncher.launch(permissions)
+    }
+
 
     private fun fetchRecentFoods() {
         val userId = mAuth.currentUser?.uid ?: return
