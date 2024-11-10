@@ -227,10 +227,25 @@
                 android:id="@+id/rvRecentFoodsProfile"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 app:layout_constraintEnd_toEndOf="@+id/chartProfile"
                 app:layout_constraintStart_toStartOf="@+id/chartProfile"
                 app:layout_constraintTop_toBottomOf="@+id/tvRecentFoods" />
+
+            <TextView
+                android:id="@+id/ibSmartwatchConnect"
+                android:layout_width="355dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/bluetooth_button"
+                android:fontFamily="@font/poppins_bold"
+                android:gravity="center"
+                android:text="Connect to Smartwatch"
+                android:textAlignment="center"
+                android:textColor="#383838"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvRecentFoodsProfile" />
 
             <TextView
                 android:id="@+id/btnLogout"
@@ -247,7 +262,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/rvRecentFoodsProfile"
                 app:layout_constraintStart_toStartOf="@+id/rvRecentFoodsProfile"
-                app:layout_constraintTop_toBottomOf="@+id/rvRecentFoodsProfile" />
+                app:layout_constraintTop_toBottomOf="@+id/ibSmartwatchConnect" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

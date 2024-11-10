@@ -46,7 +46,7 @@
             android:backgroundTint="#00FFFFFF"
             android:scaleType="centerInside"
             android:src="@drawable/camera"
-            android:tint="#80808080" />
+            android:tint="@color/ibOff" />
 
         <ImageButton
             android:id="@+id/imageButtonSalad"

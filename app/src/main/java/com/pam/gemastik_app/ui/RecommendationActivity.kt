@@ -29,8 +29,13 @@ import com.pam.gemastik_app.databinding.ActivityRecommendationBinding
 import com.pam.gemastik_app.ml.FoodClassificationModel
 import com.pam.gemastik_app.model.FoodModel
 import com.pam.gemastik_app.thread.CalorieAccess
+import com.pam.gemastik_app.thread.NotificationThreads
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.MenuFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.json.JSONObject
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
@@ -42,187 +47,227 @@ class RecommendationActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
     private var api_id1 = BuildConfig.WEATHERBIT_KEY
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var binding:ActivityRecommendationBinding
+    private lateinit var binding: ActivityRecommendationBinding
     private lateinit var breakyAdapter: FoodAdapter
     private lateinit var lunchAdapter: FoodAdapter
     private lateinit var dinnerAdapter: FoodAdapter
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private lateinit var calorieAccess: CalorieAccess
+    private lateinit var notificationThreads: NotificationThreads
     private val Breaky: MutableList<FoodModel> = ArrayList()
     private val Lunch: MutableList<FoodModel> = ArrayList()
     private val Dinner: MutableList<FoodModel> = ArrayList()
 
-     override fun onCreate(savedInstanceState: Bundle?) {
-         super.onCreate(savedInstanceState)
-         binding = ActivityRecommendationBinding.inflate(layoutInflater)
-         setContentView(binding.root)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityRecommendationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-         FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(this)
 
-         firebaseDatabase = FirebaseDatabase.getInstance(BuildConfig.FB_DB_KEY)
-         databaseReference = firebaseDatabase.getReference()
+        firebaseDatabase = FirebaseDatabase.getInstance(BuildConfig.FB_DB_KEY)
+        databaseReference = firebaseDatabase.getReference()
 
-         val fragment1: MenuFragment = MenuFragment.newInstance(this::class.java.simpleName)
+        val fragment1: MenuFragment = MenuFragment.newInstance(this::class.java.simpleName)
 
-         supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.flMenu, fragment1).commit()
 
-         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-         var reccomd = calculateRecommendation()
+        var reccomd = calculateRecommendation()
 
-         val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-         val lunchLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-         val dinnerLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-         binding.rvBreaky.layoutManager = breakyLM
-         binding.rvLunch.layoutManager = lunchLM
-         binding.rvDinner.layoutManager = dinnerLM
+        val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val lunchLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val dinnerLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-         breakyAdapter = FoodAdapter(this, Breaky)
-         lunchAdapter = FoodAdapter(this, Lunch)
-         dinnerAdapter = FoodAdapter(this, Dinner)
+        binding.rvBreaky.layoutManager = breakyLM
+        binding.rvLunch.layoutManager = lunchLM
+        binding.rvDinner.layoutManager = dinnerLM
 
-         binding.rvBreaky.adapter = breakyAdapter
-         binding.rvLunch.adapter = lunchAdapter
-         binding.rvDinner.adapter = dinnerAdapter
+        breakyAdapter = FoodAdapter(this, Breaky)
+        lunchAdapter = FoodAdapter(this, Lunch)
+        dinnerAdapter = FoodAdapter(this, Dinner)
 
-         fetchFood()
+        binding.rvBreaky.adapter = breakyAdapter
+        binding.rvLunch.adapter = lunchAdapter
+        binding.rvDinner.adapter = dinnerAdapter
 
-         binding.moreBreaky.setOnClickListener {
-             val runnable = Runnable {
-                 databaseReference.child("Foods").child("Breakfast").addValueEventListener(object: ValueEventListener{
-                     override fun onDataChange(snapshot: DataSnapshot) {
-                         Breaky.clear()
-                         for (dataSnapshot in snapshot.children) {
-                             val breaky = dataSnapshot.getValue(FoodModel::class.java)
-                             if (breaky != null) {
-                                 Breaky.add(breaky)
-                             }
-                         }
-                         breakyAdapter.notifyDataSetChanged()
-                     }
-                     override fun onCancelled(error: DatabaseError) {
-                         Log.e("Database error", error.toString())
-                         Toast.makeText(this@RecommendationActivity, "Failed to load more breakfast data", Toast.LENGTH_SHORT).show()
-                     }
-                 })
-             }
-             val moreBreaky = Thread(runnable)
-             moreBreaky.start()
-             binding.moreBreaky.visibility = View.GONE
-         }
+        fetchFood()
 
-         binding.moreLunch.setOnClickListener {
-             val runnable = Runnable {
-                 databaseReference.child("Foods").child("Lunch").addValueEventListener(object: ValueEventListener{
-                     override fun onDataChange(snapshot: DataSnapshot) {
-                         Lunch.clear()
-                         for (dataSnapshot in snapshot.children) {
-                             val lunch = dataSnapshot.getValue(FoodModel::class.java)
-                             if (lunch != null) {
-                                 Lunch.add(lunch)
-                             }
-                         }
-                         lunchAdapter.notifyDataSetChanged()
-                     }
-                     override fun onCancelled(error: DatabaseError) {
-                         Toast.makeText(this@RecommendationActivity, "Failed to load more lunch data", Toast.LENGTH_SHORT).show()
-                     }
-                 })
-             }
-             val moreLunch = Thread(runnable)
-             moreLunch.start()
-             binding.moreLunch.visibility = View.GONE
-         }
+        binding.moreBreaky.setOnClickListener {
+            val runnable = Runnable {
+                databaseReference.child("Foods").child("Breakfast")
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            Breaky.clear()
+                            for (dataSnapshot in snapshot.children) {
+                                val breaky = dataSnapshot.getValue(FoodModel::class.java)
+                                if (breaky != null) {
+                                    Breaky.add(breaky)
+                                }
+                            }
+                            breakyAdapter.notifyDataSetChanged()
+                        }
 
-         binding.moreDinner.setOnClickListener {
-             val runnable = Runnable {
-                 databaseReference.child("Foods").child("Dinner").addValueEventListener(object: ValueEventListener{
-                     override fun onDataChange(snapshot: DataSnapshot) {
-                         Dinner.clear()
-                         for (dataSnapshot in snapshot.children) {
-                             val dinner = dataSnapshot.getValue(FoodModel::class.java)
-                             if (dinner != null) {
-                                 Dinner.add(dinner)
-                             }
-                         }
-                         dinnerAdapter.notifyDataSetChanged()
-                     }
-                     override fun onCancelled(error: DatabaseError) {
-                         Toast.makeText(this@RecommendationActivity, "Failed to load more dinner data", Toast.LENGTH_SHORT).show()
-                     }
-                 })
-             }
-             val moreDinner = Thread(runnable)
-             moreDinner.start()
-             binding.moreDinner.visibility = View.GONE
-         }
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.e("Database error", error.toString())
+                            Toast.makeText(
+                                this@RecommendationActivity,
+                                "Failed to load more breakfast data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+            }
+            val moreBreaky = Thread(runnable)
+            moreBreaky.start()
+            binding.moreBreaky.visibility = View.GONE
+        }
+
+        binding.moreLunch.setOnClickListener {
+            val runnable = Runnable {
+                databaseReference.child("Foods").child("Lunch")
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            Lunch.clear()
+                            for (dataSnapshot in snapshot.children) {
+                                val lunch = dataSnapshot.getValue(FoodModel::class.java)
+                                if (lunch != null) {
+                                    Lunch.add(lunch)
+                                }
+                            }
+                            lunchAdapter.notifyDataSetChanged()
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(
+                                this@RecommendationActivity,
+                                "Failed to load more lunch data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+            }
+            val moreLunch = Thread(runnable)
+            moreLunch.start()
+            binding.moreLunch.visibility = View.GONE
+        }
+
+        binding.moreDinner.setOnClickListener {
+            val runnable = Runnable {
+                databaseReference.child("Foods").child("Dinner")
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            Dinner.clear()
+                            for (dataSnapshot in snapshot.children) {
+                                val dinner = dataSnapshot.getValue(FoodModel::class.java)
+                                if (dinner != null) {
+                                    Dinner.add(dinner)
+                                }
+                            }
+                            dinnerAdapter.notifyDataSetChanged()
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(
+                                this@RecommendationActivity,
+                                "Failed to load more dinner data",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+            }
+            val moreDinner = Thread(runnable)
+            moreDinner.start()
+            binding.moreDinner.visibility = View.GONE
+        }
     }
 
     private fun fetchFood() {
         val runnable = Runnable {
-            databaseReference.child("Foods").child("Breakfast").addValueEventListener(object: ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Breaky.clear()
-                    val children = snapshot.children.toList()
-                    for (i in 0 until 1) {
-                        val dataSnapshot = children[i]
-                        val breaky = dataSnapshot.getValue(FoodModel::class.java)
-                        if (breaky != null) {
-                            Breaky.add(breaky)
+            databaseReference.child("Foods").child("Breakfast")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Breaky.clear()
+                        val children = snapshot.children.toList()
+                        for (i in 0 until 1) {
+                            val dataSnapshot = children[i]
+                            val breaky = dataSnapshot.getValue(FoodModel::class.java)
+                            if (breaky != null) {
+                                Breaky.add(breaky)
+                            }
                         }
+                        breakyAdapter.notifyDataSetChanged()
                     }
-                    breakyAdapter.notifyDataSetChanged()
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@RecommendationActivity, "Failed to load breakfast data", Toast.LENGTH_SHORT).show()
-                }
-            })
 
-            databaseReference.child("Foods").child("Lunch").addValueEventListener(object: ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Lunch.clear()
-                    val children = snapshot.children.toList()
-                    for (i in 0 until 1) {
-                        val dataSnapshot = children[i]
-                        val lunch = dataSnapshot.getValue(FoodModel::class.java)
-                        if (lunch != null) {
-                            Lunch.add(lunch)
-                        }
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(
+                            this@RecommendationActivity,
+                            "Failed to load breakfast data",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                    lunchAdapter.notifyDataSetChanged()
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@RecommendationActivity, "Failed to load lunch data", Toast.LENGTH_SHORT).show()
-                }
-            })
+                })
 
-            databaseReference.child("Foods").child("Dinner").addValueEventListener(object: ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    Dinner.clear()
-                    val children = snapshot.children.toList()
-                    for (i in 0 until 1) {
-                        val dataSnapshot = children[i]
-                        val dinner = dataSnapshot.getValue(FoodModel::class.java)
-                        if (dinner != null) {
-                            Dinner.add(dinner)
+            databaseReference.child("Foods").child("Lunch")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Lunch.clear()
+                        val children = snapshot.children.toList()
+                        for (i in 0 until 1) {
+                            val dataSnapshot = children[i]
+                            val lunch = dataSnapshot.getValue(FoodModel::class.java)
+                            if (lunch != null) {
+                                Lunch.add(lunch)
+                            }
                         }
+                        lunchAdapter.notifyDataSetChanged()
                     }
-                    dinnerAdapter.notifyDataSetChanged()
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@RecommendationActivity, "Failed to load dinner data", Toast.LENGTH_SHORT).show()
-                }
-            })
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(
+                            this@RecommendationActivity,
+                            "Failed to load lunch data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+
+            databaseReference.child("Foods").child("Dinner")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        Dinner.clear()
+                        val children = snapshot.children.toList()
+                        for (i in 0 until 1) {
+                            val dataSnapshot = children[i]
+                            val dinner = dataSnapshot.getValue(FoodModel::class.java)
+                            if (dinner != null) {
+                                Dinner.add(dinner)
+                            }
+                        }
+                        dinnerAdapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(
+                            this@RecommendationActivity,
+                            "Failed to load dinner data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
         }
         val net = Thread(runnable)
         net.start()
     }
 
     private fun checkAndRequestPermissions(): Boolean {
-        val fineLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-        val coarseLocationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val fineLocationPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocationPermission =
+            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
 
         val listPermissionsNeeded = ArrayList<String>()
 
@@ -235,7 +280,11 @@ class RecommendationActivity : AppCompatActivity() {
         }
 
         if (listPermissionsNeeded.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toTypedArray(), LOCATION_PERMISSION_REQUEST_CODE)
+            ActivityCompat.requestPermissions(
+                this,
+                listPermissionsNeeded.toTypedArray(),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return false
         }
         return true
@@ -246,7 +295,8 @@ class RecommendationActivity : AppCompatActivity() {
         fusedLocationClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 if (location != null) {
-                    val weather_url1 = "https://api.weatherbit.io/v2.0/current?lat=${location.latitude}&lon=${location.longitude}&key=$api_id1"
+                    val weather_url1 =
+                        "https://api.weatherbit.io/v2.0/current?lat=${location.latitude}&lon=${location.longitude}&key=$api_id1"
                     getTemp({ temperature ->
                         if (temperature != "0") {
                             // Successfully received temperature data
@@ -263,7 +313,8 @@ class RecommendationActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.e("Location Error", e.message ?: "Unknown error")
-                Toast.makeText(this, "An error appeared while finding locaiton", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "An error appeared while finding locaiton", Toast.LENGTH_SHORT)
+                    .show()
             }
     }
 
@@ -279,7 +330,15 @@ class RecommendationActivity : AppCompatActivity() {
                     val temperature = obj2.getString("temp")
                     val cityName = obj2.getString("city_name")
                     Log.d("weather", "$cityName $temperature")
-                    Toast.makeText(this, "City $cityName, Temp $temperature", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "City $cityName, Temp $temperature", Toast.LENGTH_SHORT)
+                        .show()
+                    // Check if it's warm and send a hydration reminder
+                    if (temperature.toDouble() > 30.0) { // Set your desired threshold here
+                        notificationThreads.sendNotificationInThread(
+                            "It's quite warm outside! Remember to stay hydrated and drink extra water.",
+                            "Hydration Reminder"
+                        )
+                    }
                     onResult(temperature)
                 } catch (e: Exception) {
                     Log.e("JSON Error", e.message ?: "Unknown error")
@@ -298,7 +357,7 @@ class RecommendationActivity : AppCompatActivity() {
     }
 
     private fun calculateRecommendation(): String {
-        val location = if(checkAndRequestPermissions()) {
+        val location = if (checkAndRequestPermissions()) {
             calorieAccess = CalorieAccess()
             var persona = ""
             var temp = ""
@@ -320,7 +379,11 @@ class RecommendationActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             LOCATION_PERMISSION_REQUEST_CODE -> {
@@ -331,7 +394,6 @@ class RecommendationActivity : AppCompatActivity() {
                     // Permission denied, show a message to the user
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
                 }
-                return
             }
         }
     }
@@ -344,14 +406,16 @@ class RecommendationActivity : AppCompatActivity() {
         val medsArray = resources.getStringArray(R.array.meds)
 
         // Get the index of the condition in medsArray
-        var conditionIndex = medsArray.indexOf(condition).toFloat() // Convert to float for the model input
+        var conditionIndex =
+            medsArray.indexOf(condition).toFloat() // Convert to float for the model input
         if (conditionIndex == -1f) {
             // If condition is not found, return "Unknown"
             conditionIndex = 0F
         }
 
         // Parse temp to a float, or use a default value if null
-        val temperature = temp?.toFloatOrNull() ?: 25.0f // Default to 25°C if temp is null or invalid
+        val temperature =
+            temp?.toFloatOrNull() ?: 25.0f // Default to 25°C if temp is null or invalid
 
         // Prepare input tensor
         val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 2), DataType.FLOAT32)

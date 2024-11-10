@@ -64,15 +64,27 @@ class ProfileActivity : AppCompatActivity() {
         binding.tvProfileName.text = mAuth.currentUser?.displayName ?: "User"
         binding.tvProfileEmail.text = mAuth.currentUser?.email
 
+        binding.tvViewAllRecentFoods.setOnClickListener {
+            val intent = Intent(it.context, DailyRecentFoodsActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.ibSmartwatchConnect.setOnClickListener {
+
+        }
+
         binding.btnLogout.setOnClickListener {
-            HomeActivity.auth .signOut()
+            HomeActivity.auth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
 
     private fun fetchRecentFoods() {
-        mAuth.currentUser?.uid?.let { databaseReference.child("user_food_tracking").child(it).child(currDate).limitToFirst(3).addValueEventListener(object: ValueEventListener{
+        val userId = mAuth.currentUser?.uid ?: return
+        val dailyDataRef = databaseReference.child("user_food_tracking").child(userId).child("daily_data").child(currDate)
+
+        dailyDataRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 recentFoods.clear()
                 for (dataSnapshot in snapshot.children) {
@@ -82,11 +94,12 @@ class ProfileActivity : AppCompatActivity() {
                     }
                 }
                 if (recentFoods.isEmpty()) {
+                    // Add a default item if no food data exists
                     recentFoods.add(
                         RecentFoodsModel(
                             calorie = "N/A",
                             menu = "You haven't eaten anything today",
-                            protein = null
+                            protein = "N/A"
                         )
                     )
                 }
@@ -96,9 +109,10 @@ class ProfileActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(this@ProfileActivity, "Failed to load recent foods data", Toast.LENGTH_SHORT).show()
             }
-
-        }) }
+        })
     }
+
+
 
     private fun loadBMI() {
         calorieAccess.getCalorieData { calorieList ->
