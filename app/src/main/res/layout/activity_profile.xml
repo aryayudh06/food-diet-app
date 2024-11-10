@@ -239,7 +239,7 @@
                 android:background="@drawable/bluetooth_button"
                 android:fontFamily="@font/poppins_bold"
                 android:gravity="center"
-                android:text="Connect to Smartwatch"
+                android:text="Connect to HealthConnect"
                 android:textAlignment="center"
                 android:textColor="#383838"
                 android:textSize="14sp"

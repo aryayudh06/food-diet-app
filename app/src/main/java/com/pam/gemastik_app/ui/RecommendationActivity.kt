@@ -48,6 +48,9 @@ class RecommendationActivity : AppCompatActivity() {
     private var api_id1 = BuildConfig.WEATHERBIT_KEY
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var binding: ActivityRecommendationBinding
+    private lateinit var recommendationAdapter: FoodAdapter
+    private val Recommendations: MutableList<FoodModel> = ArrayList()
+    private val RecommendationsFood:ArrayList<String> = ArrayList()
     private lateinit var breakyAdapter: FoodAdapter
     private lateinit var lunchAdapter: FoodAdapter
     private lateinit var dinnerAdapter: FoodAdapter
@@ -58,6 +61,7 @@ class RecommendationActivity : AppCompatActivity() {
     private val Breaky: MutableList<FoodModel> = ArrayList()
     private val Lunch: MutableList<FoodModel> = ArrayList()
     private val Dinner: MutableList<FoodModel> = ArrayList()
+    private var reccmd = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,21 +79,26 @@ class RecommendationActivity : AppCompatActivity() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        var reccomd = calculateRecommendation()
+        reccmd = calculateRecommendation()
+//        RecommendationsFood.add(reccmd)
 
 
+        val recommendationLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val breakyLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val lunchLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val dinnerLM = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
+        binding.rvReccomendation.layoutManager = recommendationLM
         binding.rvBreaky.layoutManager = breakyLM
         binding.rvLunch.layoutManager = lunchLM
         binding.rvDinner.layoutManager = dinnerLM
 
+        recommendationAdapter = FoodAdapter(this, Recommendations)
         breakyAdapter = FoodAdapter(this, Breaky)
         lunchAdapter = FoodAdapter(this, Lunch)
         dinnerAdapter = FoodAdapter(this, Dinner)
 
+        binding.rvReccomendation.adapter = recommendationAdapter
         binding.rvBreaky.adapter = breakyAdapter
         binding.rvLunch.adapter = lunchAdapter
         binding.rvDinner.adapter = dinnerAdapter
@@ -190,6 +199,33 @@ class RecommendationActivity : AppCompatActivity() {
             databaseReference.child("Foods").child("Breakfast")
                 .addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        Recommendations.clear()
+                        for (dataSnapshot in snapshot.children) {
+                            val food = dataSnapshot.getValue(FoodModel::class.java)
+                            if (food != null) {
+                                Log.d("food", "food list: ${food.namaMenu}")
+                                Log.d("food classified", reccmd)
+                            }
+                            if (food != null && food.namaMenu.equals(reccmd, ignoreCase = true)) {
+                                Log.d("food", "Found matching food: ${food.namaMenu}")
+                                Recommendations.add(food)
+                            }
+                        }
+                            recommendationAdapter.notifyDataSetChanged()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(
+                            this@RecommendationActivity,
+                            "Failed to load recommendation data",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+
+            databaseReference.child("Foods").child("Breakfast")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
                         Breaky.clear()
                         val children = snapshot.children.toList()
                         for (i in 0 until 1) {
@@ -262,6 +298,63 @@ class RecommendationActivity : AppCompatActivity() {
         val net = Thread(runnable)
         net.start()
     }
+
+//    private fun fetchFood() {
+//        val runnable = Runnable {
+//
+//            // Mendapatkan hasil rekomendasi dari `calculateRecommendation()`
+//            val reccomd = calculateRecommendation()
+//
+//            // Mendapatkan referensi ke kategori makanan
+//            val categories = listOf("Breakfast", "Lunch", "Dinner")
+//
+//            for (category in categories) {
+//                databaseReference.child("Foods").child(category)
+//                    .addListenerForSingleValueEvent(object : ValueEventListener {
+//                        override fun onDataChange(snapshot: DataSnapshot) {
+//                            val foodList = when (category) {
+//                                "Breakfast" -> Breaky
+//                                "Lunch" -> Lunch
+//                                "Dinner" -> Dinner
+//                                else -> return
+//                            }
+//                            foodList.clear()
+//                            for (dataSnapshot in snapshot.children) {
+//                                val food = dataSnapshot.getValue(FoodModel::class.java)
+//                                if (food != null) {
+//                                    foodList.add(food)
+//                                    Log.d("food", food.namaMenu)
+//                                    // Cek apakah makanan ini adalah rekomendasi
+//                                    if (food.namaMenu == reccomd) {
+//                                        Recommendations.clear()
+//                                        Recommendations.add(food)
+//                                        Log.d("food", food.namaMenu)
+//                                        recommendationAdapter.notifyDataSetChanged()
+//                                    }
+//                                }
+//                            }
+//
+//                            when (category) {
+//                                "Breakfast" -> breakyAdapter.notifyDataSetChanged()
+//                                "Lunch" -> lunchAdapter.notifyDataSetChanged()
+//                                "Dinner" -> dinnerAdapter.notifyDataSetChanged()
+//                            }
+//                        }
+//
+//                        override fun onCancelled(error: DatabaseError) {
+//                            Toast.makeText(
+//                                this@RecommendationActivity,
+//                                "Failed to load $category data",
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                    })
+//            }
+//        }
+//
+//        val net = Thread(runnable)
+//        net.start()
+//    }
 
     private fun checkAndRequestPermissions(): Boolean {
         val fineLocationPermission =
