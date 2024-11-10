@@ -57,7 +57,7 @@ class FoodTrackingActivity : AppCompatActivity() {
 
         binding.ibConfirm.setOnClickListener {
             saveData(calorie, menu, protein)
-            Intent(this, HomeActivity::class.java)
+            startActivity(Intent(this, HomeActivity::class.java))
         }
     }
 
@@ -66,60 +66,48 @@ class FoodTrackingActivity : AppCompatActivity() {
         val currDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val dailyData = databaseReference.child("user_food_tracking").child(userId).child("daily_data").child(currDate)
 
-        val newEntry = mapOf(
+        val dataUser = mapOf(
             "menu" to menu,
             "calorie" to calorie,
-            "protein" to protein
+            "protein" to protein,
         )
 
-        dailyData.get().addOnCompleteListener { task ->
+        dailyData.push().setValue(dataUser).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val existingData = task.result?.value as? MutableList<Map<String, String>> ?: mutableListOf()
-                existingData.add(newEntry)  // Append the new data to the existing list
-
-                dailyData.setValue(existingData).addOnCompleteListener { saveTask ->
-                    if (saveTask.isSuccessful) {
-                        Toast.makeText(this, "Data stored successfully", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, HomeActivity::class.java))
-                    } else {
-                        Toast.makeText(this, "Data saving failed: ${saveTask.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }.addOnFailureListener { exception ->
-                    Toast.makeText(this, "Data saving failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(this, "Data stored successfully", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Failed to retrieve existing data: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Data saving failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
+        }.addOnFailureListener { exception ->
+            Toast.makeText(this, "Data saving failed: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
-
     private fun foodRecog() {
-        val runnable = Runnable {
+        CoroutineScope(Dispatchers.IO).launch {
             val imageUriString = intent.getStringExtra("imageUri")
             if (imageUriString != null) {
                 val imageUri = Uri.parse(imageUriString)
                 updateImage(imageUri)
                 val bitmapImg: Bitmap? = uriToBitmap(contentResolver, imageUri)
+
+                val responseText = bitmapImg?.let {
+                    ModelTask(apiKey).executeModelCall(it)
+                }
+                val split = responseText?.split(";")?.map { it.trim() } ?: emptyList()
+
+                menu = split.getOrNull(0) ?: "Unknown"
+                calorie = split.getOrNull(1) ?: "0 kcal"
+                protein = split.getOrNull(2) ?: "0 grams protein"
+                minerals = split.getOrNull(3) ?: ""
+
                 CoroutineScope(Dispatchers.Main).launch {
-                    val modelTask = ModelTask(apiKey)
-                    val responseText = bitmapImg?.let { modelTask.executeModelCall(it) }
-                    val split = responseText?.split(";")?.map { it.trim() } ?: emptyList()
-
-                    // Parse response data
-                    menu = split.getOrNull(0) ?: "Unknown"
-                    calorie = split.getOrNull(1) ?: "0 kcal"
-                    protein = split.getOrNull(2) ?: "0 grams protein"
-                    minerals = split.getOrNull(3) ?: ""
-
                     binding.tvRecordMenu.text = menu
                     binding.tvResep1.text = "- $calorie\n- $protein\n- $minerals"
                     binding.ibConfirm.isEnabled = true
                 }
             }
         }
-        val recog = Thread(runnable)
-        recog.start()
     }
 
     private fun updateImage(image: Uri) {
