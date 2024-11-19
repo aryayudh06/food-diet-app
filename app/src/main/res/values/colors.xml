@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="yellow50">#F9E42A</color>
@@ -8,7 +9,12 @@
     <color name="ibOff">#80808080</color>
     <color name="ibOn">#00FFFFFF</color>
     <color name="mid_grey">#BFBFBF</color>
-    <color name="yellow_shadow">#E7D000</color>
     <color name="text">#383838</color>
+    <color name="yellow_shadow">#E7D000</color>
     <color name="primary_yellow">#FFD600</color>
+    <color name="primary_yellow_dark">#E9BF00</color>
+    <color name="green_shadow">#8EA46D</color>
+    <color name="primary_green">#CFEE9E</color>
+    <color name="primary_green_dark">#BBD78F</color>
+
 </resources>

@@ -80,7 +80,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="76dp"
-        android:background="@drawable/green_button"
+        android:background="@drawable/green_button_selector"
         android:contentDescription="confirmBtn"
         android:fontFamily="@font/poppins_bold"
         android:gravity="center"

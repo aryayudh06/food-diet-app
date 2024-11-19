@@ -51,29 +51,29 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.generativeai)
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation("com.android.volley:volley:1.2.1")
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation(platform(libs.firebase.bom.v3312))
+    implementation(libs.volley)
+    implementation (libs.play.services.location)
     // Add the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-auth")
-    implementation ("com.google.android.material:material:1.12.0")
-    implementation ("androidx.health.connect:connect-client:1.1.0-alpha10")
-    implementation ("com.google.android.material:material:1.7.0")
+    implementation(libs.google.firebase.auth)
+    implementation (libs.material)
+    implementation (libs.androidx.connect.client)
+    implementation (libs.material.v170)
 
     // Also add the dependency for the Google Play services library and specify its version
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    implementation(libs.play.services.auth)
+    implementation(libs.generativeai)
 
     // Dependency for images
-    implementation("com.github.bumptech.glide:glide:4.12.0")
+    implementation(libs.glide)
 
     // Dependency for charts
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(libs.mpandroidchart)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -92,19 +92,21 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation (libs.kotlinx.coroutines.play.services)
 
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+
+    implementation (libs.androidx.lifecycle.runtime.ktx)
 
 
-    val cameraxVersion = "1.3.4"
 
-    implementation("androidx.camera:camera-core:$cameraxVersion")
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-video:$cameraxVersion")
 
-    implementation("androidx.camera:camera-view:$cameraxVersion")
-    implementation("androidx.camera:camera-extensions:$cameraxVersion")
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.video)
+
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
 }
 
 fun getEnvVar(name: String): String? {

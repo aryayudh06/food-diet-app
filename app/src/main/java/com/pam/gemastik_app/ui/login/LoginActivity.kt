@@ -1,12 +1,15 @@
 package com.pam.gemastik_app.ui.login
 
+import android.annotation.SuppressLint
 import com.pam.gemastik_app.ui.healthconnect.HealthConnectTest
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.pam.gemastik_app.BuildConfig
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -16,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pam.gemastik_app.databinding.ActivityLoginBinding
 import com.pam.gemastik_app.ui.HomeActivity
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -25,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
     private var showOneTapUI = true
     private var CLIENT_ID = BuildConfig.CLIENT_ID
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,25 +47,30 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
 
+        binding.registerTextView.text = Html.fromHtml("Don't have an account? <u>Register</u>")
         binding.registerTextView.setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
-            finish()
+            if (binding.registerTextView.text.toString() == "Register") {
+                startActivity(Intent(this, RegisterActivity::class.java))
+            }
         }
 
-        binding.loginButton.setOnClickListener(){
+        binding.loginButton.setOnClickListener {
             val email = binding.emailEditText.text.toString()
             val passwd = binding.passwordEditText.text.toString()
 
-            if(email.isNotEmpty() && passwd.isNotEmpty())
-                HomeActivity.auth.signInWithEmailAndPassword(email, passwd).addOnCompleteListener(){
-                    if(it.isSuccessful){
-                        startActivity(Intent(this, HomeActivity::class.java))
+            if (email.isNotEmpty() && passwd.isNotEmpty()) {
+                lifecycleScope.launch {
+                    try {
+                        HomeActivity.auth.signInWithEmailAndPassword(email, passwd).await()
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                         finish()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@LoginActivity, e.localizedMessage, Toast.LENGTH_LONG).show()
                     }
-                }.addOnFailureListener(){
-                    Toast.makeText(this, it.localizedMessage, Toast.LENGTH_LONG).show()
                 }
+            }
         }
+
 
         binding.googleBtn.setOnClickListener(){
             signInWithGoogle()
@@ -79,28 +90,28 @@ class LoginActivity : AppCompatActivity() {
             try {
                 val account = task.getResult(ApiException::class.java)!!
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
-                firebaseAuthWithGoogle(account.idToken!!)
+                lifecycleScope.launch {
+                    firebaseAuthWithGoogle(account.idToken!!)
+                }
             } catch (e: ApiException) {
                 Log.w(TAG, "Google sign in failed", e)
             }
         }
     }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        HomeActivity.auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "signInWithCredential:success")
-                    val user = HomeActivity.auth.currentUser
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
-                }
-            }
+    private suspend fun firebaseAuthWithGoogle(idToken: String) {
+        try {
+            val credential = GoogleAuthProvider.getCredential(idToken, null)
+            HomeActivity.auth.signInWithCredential(credential).await()
+            Log.d(TAG, "signInWithCredential:success")
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+        } catch (e: Exception) {
+            Log.w(TAG, "signInWithCredential:failure", e)
+            Toast.makeText(this, "Authentication Failed.", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
     override fun onResume() {
         super.onResume()

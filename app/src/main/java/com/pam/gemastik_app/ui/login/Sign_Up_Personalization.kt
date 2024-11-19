@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -16,6 +17,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.pam.gemastik_app.R
 import com.pam.gemastik_app.model.UserData
 import com.pam.gemastik_app.databinding.ActivitySignUpPersonalizationBinding
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -51,7 +54,9 @@ class Sign_Up_Personalization : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             if (selectedDateOfBirth != null) {
-                createUserAndSaveData(email, passwd)
+                lifecycleScope.launch {
+                    createUserAndSaveData(email, passwd)
+                }
             } else {
                 Toast.makeText(this, "Please select your date of birth", Toast.LENGTH_SHORT).show()
             }
@@ -95,6 +100,10 @@ class Sign_Up_Personalization : AppCompatActivity() {
                 selectedDateOfBirth = "$dayOfMonth/${selectedMonth + 1}/$selectedYear"
                 binding.selectDateOfBirth.text = selectedDateOfBirth
             }, year, month, day)
+            //set limit
+            val currentDateInMillis = calendar.timeInMillis
+            datePickerDialog.datePicker.maxDate = currentDateInMillis
+
             datePickerDialog.show()
         }
     }
@@ -103,7 +112,7 @@ class Sign_Up_Personalization : AppCompatActivity() {
         selectedDateOfBirth?.let {
             val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val dateOfBirth = sdf.parse(it)
-            if (dateOfBirth != null) {
+            dateOfBirth?.let {
                 val dobCalendar = Calendar.getInstance()
                 dobCalendar.time = dateOfBirth
 
@@ -119,42 +128,42 @@ class Sign_Up_Personalization : AppCompatActivity() {
         return 0
     }
 
-    private fun createUserAndSaveData(email: String, password: String) {
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                val user = mAuth.currentUser
-                val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(uname).build()
-                user?.updateProfile(profileUpdates)?.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        saveDataToFirebase()
-                    } else {
-                        Toast.makeText(this, "Failed to update profile: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Authentication failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-            }
+    private suspend fun createUserAndSaveData(email: String, password: String) {
+        try {
+            // Create user using Firebase Auth
+            val authResult = mAuth.createUserWithEmailAndPassword(email, password).await()
+            val user = authResult.user
+
+            // Update user profile with username
+            user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(uname).build())?.await()
+
+            // Save user data to Firebase Database
+            saveDataToFirebase(user)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun saveDataToFirebase() {
+    private suspend fun saveDataToFirebase(user: FirebaseUser?) {
         val age = calculateAge(selectedDateOfBirth)
 
         val sendBundle = Bundle()
         sendBundle.putString("gender", selectedGender)
         sendBundle.putInt("age", age)
 
-        val intent = Intent(this, UserDataActivity::class.java)
-        intent.putExtras(sendBundle)
+        user?.let {
+            val userId = it.uid
 
-        val userId = mAuth.currentUser?.uid ?: return
-        val userData = UserData(selectedGender, selectedMed, selectedDateOfBirth)
-        databaseReference.child("user_personalization").child(userId).setValue(userData).addOnSuccessListener {
+            val userData = UserData(selectedGender, selectedMed, selectedDateOfBirth)
+            databaseReference.child("user_personalization").child(userId).setValue(userData).await()
+
+            // Send data to next activity
+            val intent = Intent(this, UserDataActivity::class.java)
+
             Toast.makeText(this, "Data saved successfully!", Toast.LENGTH_LONG).show()
             startActivity(intent)
             finish()
-        }.addOnFailureListener { e ->
-            Toast.makeText(this, "Failed to save data: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
-}
+    }
+
