@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,7 @@ import com.pam.gemastik_app.model.healthconnect.HealthConnectManager
 import com.pam.gemastik_app.model.healthconnect.WeightData
 import com.pam.gemastik_app.model.healthconnect.dateTimeWithOffsetOrDefault
 import com.pam.gemastik_app.thread.CalorieAccess
+import com.pam.gemastik_app.thread.NotificationThreads
 import com.pam.gemastik_app.ui.adapter.FoodAdapter
 import com.pam.gemastik_app.ui.fragment.ChartFragment
 import com.pam.gemastik_app.ui.fragment.MenuFragment
@@ -60,6 +62,8 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private val homeFood: MutableList<FoodModel> = ArrayList()
+    private lateinit var notificationThreads: NotificationThreads
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var healthConnectManager: HealthConnectManager
     private lateinit var healthConnectCompatibleApps:  Map<String, HealthConnectAppInfo>
     private var readingsList: MutableState<List<WeightData>> = mutableStateOf(listOf())
@@ -90,6 +94,18 @@ class HomeActivity : AppCompatActivity() {
 
         healthConnectManager = HealthConnectManager(this)
         healthConnectCompatibleApps = healthConnectManager.healthConnectCompatibleApps
+
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                // Permission granted
+            } else {
+                // Permission denied
+            }
+        }
+
+        notificationThreads = NotificationThreads(this, requestPermissionLauncher)
 
         lifecycleScope.launch{
             if (healthConnectManager.hasAllPermissions(permissions)) {
@@ -140,6 +156,7 @@ class HomeActivity : AppCompatActivity() {
         val pressedText = ContextCompat.getColor(this, R.color.text)
         val unpressedText = ContextCompat.getColor(this, R.color.mid_grey)
 
+        sendPartOfDayNotification(partOfDay)
         fetch(partOfDay, pressedBtn, unpressedBtn, unpressedText, pressedText)
 
         binding.tvBtnBreakfast.setOnClickListener {
@@ -275,6 +292,19 @@ class HomeActivity : AppCompatActivity() {
                 Toast.makeText(this@HomeActivity, "Failed to load breakfast data", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun sendPartOfDayNotification(partOfDay: String) {
+        val title = "Good $partOfDay"
+        val message = when (partOfDay) {
+            "Morning" -> "Start your day with a healthy breakfast and a positive mindset!"
+            "Afternoon" -> "Keep pushing through your tasks. Stay hydrated!"
+            "Evening" -> "Relax and unwind. You've earned it!"
+            else -> "Hello there!"
+        }
+
+        // Send notification
+        notificationThreads.sendNotificationInThread(message, title)
     }
 
     private fun loadBMI() {
