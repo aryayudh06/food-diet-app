@@ -17,7 +17,7 @@ class ModelTask(private val apiKey: String) {
             )
 
             val inputContent = content {
-                image(img);
+                image(img)
                 text(
                 """
                 Identifikasi makanan dari gambar yang diberikan. 
