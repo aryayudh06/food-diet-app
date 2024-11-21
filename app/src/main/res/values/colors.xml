@@ -16,5 +16,8 @@
     <color name="green_shadow">#8EA46D</color>
     <color name="primary_green">#CFEE9E</color>
     <color name="primary_green_dark">#BBD78F</color>
+    <color name="red_shadow">#AA4856</color>
+    <color name="primary_red">#E86A7D</color>
+    <color name="primary_red_dark">#D06A7D</color>
 
 </resources>

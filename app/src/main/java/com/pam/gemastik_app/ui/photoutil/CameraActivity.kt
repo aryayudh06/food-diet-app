@@ -4,11 +4,14 @@ import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -22,11 +25,12 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.Recorder
 import androidx.camera.video.Recording
 import androidx.camera.video.VideoCapture
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import com.pam.gemastik_app.R
 
 import com.pam.gemastik_app.databinding.ActivityCameraBinding
 import com.pam.gemastik_app.ui.FoodTrackingActivity
-import com.pam.gemastik_app.ui.MainActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
@@ -39,7 +43,6 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var viewBinding: ActivityCameraBinding
 
     private var imageCapture: ImageCapture? = null
-
     private var videoCapture: VideoCapture<Recorder>? = null
     private var recording: Recording? = null
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -91,6 +94,12 @@ class CameraActivity : AppCompatActivity() {
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
+
+        // "Freeze" layar dengan tangkapan Preview
+        val bitmap = viewBinding.viewFinder.bitmap
+        if (bitmap != null) {
+            freezeScreen(bitmap)
+        }
 
         // Create time stamped name and MediaStore entry.
         val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
@@ -204,6 +213,12 @@ class CameraActivity : AppCompatActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    override fun onResume() {
+        super.onResume()
+        clearFrozenScreen() // Reset tampilan "freeze"
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
@@ -222,6 +237,20 @@ class CameraActivity : AppCompatActivity() {
                 }
             }.toTypedArray()
     }
+
+    private fun clearFrozenScreen() {
+        // Menghapus gambar yang digunakan untuk "freeze"
+        viewBinding.imageViewFrozenScreen.setImageBitmap(null)
+        viewBinding.imageViewFrozenScreen.visibility = View.GONE
+    }
+
+    private fun freezeScreen(bitmap: Bitmap) {
+        viewBinding.imageViewFrozenScreen.apply {
+            setImageBitmap(bitmap)
+            visibility = View.VISIBLE
+        }
+    }
+
 }
 
 

@@ -18,9 +18,20 @@ class ModelTask(private val apiKey: String) {
 
             val inputContent = content {
                 image(img)
-                text("Apa nama makanan tersebut, jawab hanya dengan nama makanan saja. Lalu pisahkan dengan ';', berapa kandungan Kalorinya?" +
-                        "Jawab dengan menyebutkan ... kcal, lalu pisahkan dengan ';', berapa kandungan Proteinnya? Jawab dengan menyebutkan ... grams protein, lalu pisahkan dengan ';', Sebutkan kandungan mineral/vitaminnya." +
-                        " Jawab hanya dengan jawaban kata tersebut." + " Jika tidak ada gambar makanan terdeteksi, jawab dengan 'Tidak ada makanan terdeteksi.'")
+                text(
+                """
+                Identifikasi makanan dari gambar yang diberikan. 
+                Berikan respons dalam format berikut:
+                - Nama makanan; jumlah kalori dalam ... kcal; jumlah protein dalam ... grams protein; kandungan mineral/vitamin.
+        
+                Contoh respons:
+                "Nasi Goreng; 300 kcal; 10 grams protein; Vitamin A, Vitamin B12."
+                
+                Jawab **hanya** dengan format seperti contoh respons di atas **dan tidak menambahkan kata lain**.
+                Jika tidak ada gambar makanan yang terdeteksi, jawab hanya dengan:
+                "Tidak ada makanan terdeteksi."
+                """
+                )
             } 
 
             val response = generativeModel.generateContent(inputContent)

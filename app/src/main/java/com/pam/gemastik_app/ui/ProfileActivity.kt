@@ -150,7 +150,7 @@ class ProfileActivity : AppCompatActivity() {
             isEnabled = !isConnected
             text = if (isConnected) "Already Connected to Smartwatch" else "Connect to Smartwatch"
             setBackgroundResource(
-                if (isConnected) R.drawable.green_button
+                if (isConnected) R.drawable.green_button_selector
                 else R.drawable.bluetooth_button
             )
 
