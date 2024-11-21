@@ -236,7 +236,7 @@
                 android:layout_width="355dp"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/bluetooth_button"
+                android:background="@drawable/bluetooth_button_selector"
                 android:fontFamily="@font/poppins_bold"
                 android:gravity="center"
                 android:text="Connect to HealthConnect"

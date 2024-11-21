@@ -431,6 +431,11 @@ class RecommendationActivity : AppCompatActivity() {
                             "It's quite warm outside! Remember to stay hydrated and drink extra water.",
                             "Hydration Reminder"
                         )
+                    }else if (temperature.toDouble() <= 19.0) { // Set your desired threshold here
+                        notificationThreads.sendNotificationInThread(
+                            "It's quite cold outside! Remember to stay hydrated and drink extra water, especially warm water!.",
+                            "Hydration Reminder"
+                        )
                     }
                     onResult(temperature)
                 } catch (e: Exception) {

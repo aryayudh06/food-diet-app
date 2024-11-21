@@ -1,10 +1,12 @@
 package com.pam.gemastik_app.thread
 
 import android.Manifest
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.app.ActivityCompat
@@ -44,7 +46,9 @@ class NotificationThreads(
             .setSmallIcon(R.drawable.logo)  // Replace with your own icon
             .setContentTitle(title)
             .setContentText(message)  // Set custom message passed as parameter
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setSound(Uri.EMPTY)
+            .setDefaults(Notification.DEFAULT_VIBRATE)
 
         val notificationManager = NotificationManagerCompat.from(context)
 
