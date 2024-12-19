@@ -37,14 +37,8 @@
 4. Install required dependencies and libraries for AI integration.
 5. Build and run the app on your Android device or emulator.
 
-## Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes with clear and concise messages.
-4. Submit a pull request, and we will review it as soon as possible.
+## Documentation
+https://drive.google.com/drive/folders/1Yfwa7QQyhAbexrx__NRzedWbdC7KwkyC?usp=sharing
 
 ## License
 
